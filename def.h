@@ -1007,6 +1007,8 @@
   #define MULTITYPE 16      
 #elif defined(VTAIL4)
  #define MULTITYPE 17
+#elif defined(TRICOPTER_HYBRID_TYPE_A)
+ #define MULTITYPE 24
 #endif
 
 /**************************************************************************************/
@@ -1116,6 +1118,17 @@
     #define PRI_SERVO_FROM   4 // use servo from 4 to 7
     #define PRI_SERVO_TO     7
   #endif
+#elif defined(TRICOPTER_HYBRID_TYPE_A)
+ #define NUMBER_MOTOR     3
+ #define PRI_SERVO_FROM   6 // use only servo 6
+ #define PRI_SERVO_TO     6
+ #undef SERVO_TILT
+ #undef CAMTRIG
+ #define SEC_SERVO_FROM   1 // Servo 1: Rear Motor Tilt, Servo 2: 
+   #if defined(TRI_HYBRID_WING_SERVOS)
+     #define SEC_SERVO_TO 4
+   #else
+     #define SEC_SERVO_TO 2
 #endif
 
 

@@ -43,6 +43,28 @@
     //#define DUALCOPTER
     //#define HELI_120_CCPM
     //#define HELI_90_DEG
+	/** Tricopter Flying-Wing Hybrid by Steve Carlson **/
+	// A Tricopter Flying-Wing Hybrid is a delta-shaped flying-wing mated with a tricopter: The minimalist VTOL super-machine! 
+	// It uses two wing servos, one yaw servo, and three BLDC motors. Either the rear tricopter tail motor or both front motors
+	// tilt such that thrust is directed back, turning the tricopter into a flying wing. A fourth servo modified for continuous 
+	// rotation is attached to a pulley or similiar mechanism to draw the front motors inward, or otherwise, as to streamline  
+	// the aircraft for forward flight in the air, and present a narrow profile on the ground for ground locomotion.
+	// Since flying wing servo mixing is the exact same thing as tank-tread mixing, a set of robot ESCs or modified continuous 
+	// rotation servos can be driven by sharing from the wing servo output. Hence, this is a dual-mode vehicle.
+	// Feedback for the draw pulley mechanism is formed by momentary push switches and resistors, such that a mid-level voltage
+	// with respect to VREF on the ADC means that the motor arms are in transit. Low or High means folded or extended, 
+	// respectively. Dang, is looks like MultiWii doesn't impliment the ADC. KK wins here.
+	//#define TRICOPTER_HYBRID_TYPE_A 
+	//#define TRICOPTER_HYBRID_TYPE_B 
+	// Type A is the Axial Tail: A regular Tricopter with the yaw motor also rotating back for forward flight.
+	// Type B is the Bicopter Configuration: Front two rotate down, rear motor fixed. Google "IAI Panther".
+	// Type C is Combine, as in all three motors rotate forward.
+	// Uncomment this wing servo enable flag if you want the controller to do the wing servos
+	//#define TRI_HYBRID_WING_SERVOS
+	// Otherwise, the servos can intercept the wires from the R/C receiver. 
+	// In which case, we may want to mix for the flying wing on the radio, and de-mix inside MultiWii
+	// De-mixing the R/C Rx inputs should work the same, regardless of if we use regular or the PPM Sum method in MultiWii
+	//#define DEMIX_PITCH_ROLL
 
   /****************************    Motor minthrottle    *******************************/
     /* Set the minimum throttle command sent to the ESC (Electronic Speed Controller)
