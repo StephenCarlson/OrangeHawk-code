@@ -65,6 +65,8 @@
 	// In which case, we may want to mix for the flying wing on the radio, and de-mix inside MultiWii
 	// De-mixing the R/C Rx inputs should work the same, regardless of if we use regular or the PPM Sum method in MultiWii
 	//#define DEMIX_PITCH_ROLL
+	// If a wing folding mechansim is present (meaning no 360-modified servo and a analog stop switch input), uncomment this:
+	//#define TRI_HYBRID_FOLD_MECH
 
   /****************************    Motor minthrottle    *******************************/
     /* Set the minimum throttle command sent to the ESC (Electronic Speed Controller)

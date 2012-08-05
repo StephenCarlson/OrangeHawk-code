@@ -886,7 +886,27 @@ void mixTable() {
     motor[2] = PIDMIX(+0,+1, -1); //REAR_L
     motor[3] = PIDMIX(+1, -1, -0); //FRONT_L
   #endif
+  #ifdef TRICOPTER_HYBRID_TYPE_A
+	motor[0] = PIDMIX( 0,+4/3, 0); //REAR
+	motor[1] = PIDMIX(-1,-2/3, 0); //RIGHT
+	motor[2] = PIDMIX(+1,-2/3, 0); //LEFT
+	servo[5] = constrain(conf.tri_yaw_middle + YAW_DIRECTION * axisPID[YAW], TRI_YAW_CONSTRAINT_MIN, TRI_YAW_CONSTRAINT_MAX); //REAR
+	servo[0] = 0; // Motor Tilt
+	#if defined(TRI_HYBRID_WING_SERVOS)
+		#if defined(TRI_HYBRID_FOLD_MECH)
+			#define SEC_SERVO_TO 4
+		#else
+			#define SEC_SERVO_TO 3
+		#endif
+	#else
+		#if defined(TRI_HYBRID_FOLD_MECH)
+			#define SEC_SERVO_TO 2
+		#else
+			#define SEC_SERVO_TO 1
+		#endif
+	#endif
 
+  
   /****************                Cam stabilize Sevos             ******************/
   #if defined(SERVO_TILT)
     #if defined(A0_A1_PIN_HEX) && (NUMBER_MOTOR == 6) && defined(PROMINI)

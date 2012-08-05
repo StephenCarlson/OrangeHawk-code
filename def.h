@@ -1126,9 +1126,18 @@
  #undef CAMTRIG
  #define SEC_SERVO_FROM   1 // Servo 1: Rear Motor Tilt, Servo 2: 
    #if defined(TRI_HYBRID_WING_SERVOS)
-     #define SEC_SERVO_TO 4
+     #if defined(TRI_HYBRID_FOLD_MECH)
+       #define SEC_SERVO_TO 4
+	 #else
+	   #define SEC_SERVO_TO 3
+	 #endif
    #else
-     #define SEC_SERVO_TO 2
+     #if defined(TRI_HYBRID_FOLD_MECH)
+       #define SEC_SERVO_TO 2
+	 #else
+	   #define SEC_SERVO_TO 1
+	 #endif
+   #endif
 #endif
 
 
