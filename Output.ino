@@ -896,7 +896,7 @@ void mixTable() {
 		servo[0]  = constrain(servo[0] + conf.wing_left_mid , WING_LEFT_MIN,  WING_LEFT_MAX );
 		servo[1]  = constrain(servo[1] + conf.wing_right_mid, WING_RIGHT_MIN, WING_RIGHT_MAX);
 	#endif
-	if(rcOptions[BOXHYBRID_FF] == 1){
+	if(rcOptions[BOXHYBRID_FF] == 1){ // Forward Flight
 		motor[0] = rcCommand[THROTTLE];		//REAR 		rcCommand[THROTTLE]
 		motor[1] = MINCOMMAND;				//RIGHT		0
 		motor[2] = MINCOMMAND;				//LEFT		0
@@ -925,6 +925,10 @@ void mixTable() {
 	// Better Idea: rcOptions[BOXHYBRID_FF] Enables a proportional term, [0:255]
 	// Inc or Dec to 0 or 255 if BOXHYBRID_FF is on or off. Term is used to phase the
 	// motors and servos gently between the two modes, using the incrementer. What is loop speed?
+	// May need to move some of the fluff to a slower loop. Put the incrementer in the 50 Hz loop, 
+	// max transition is 2.55 sec.
+	
+	//Or just use RC Aux input as proportional term
   #endif
 
   

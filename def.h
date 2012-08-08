@@ -1008,7 +1008,7 @@
 #elif defined(VTAIL4)
  #define MULTITYPE 17
 #elif defined(TRICOPTER_HYBRID_TYPE_A)
- #define MULTITYPE 24
+ #define MULTITYPE 1
 #endif
 
 /**************************************************************************************/
