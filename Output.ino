@@ -888,7 +888,7 @@ void mixTable() {
   #endif
   #ifdef TRICOPTER_HYBRID_TYPE_A
 	#if defined(TRI_HYBRID_FOLD_MECH)
-		uint16_t foldMechSetpoint = 0;
+		int16_t foldMechSetpoint = 0; // uint16_t is a type mis-match on compare with analogRead()
 	#endif
 	#if defined(TRI_HYBRID_WING_SERVOS) // Wings: 1 and 2, Tilt is 3, Fold is 4
 		servo[0]  = PITCH_DIRECTION_L * (rcData[PITCH]-MIDRC) + ROLL_DIRECTION_L * (rcData[ROLL]-MIDRC);
@@ -901,7 +901,7 @@ void mixTable() {
 		motor[1] = MINCOMMAND;				//RIGHT		0
 		motor[2] = MINCOMMAND;				//LEFT		0
 		servo[5] = MIDRC;
-		servo[2] = HYBRID_TILT_FWDFLT; // Obviously, need to implement the Incrementer to slow servo
+		servo[2] = HYBRID_TILT_FWDFLT; // *WORK NEEDED* Need to implement the Incrementer to slow servo
 		#if defined(TRI_HYBRID_FOLD_MECH)
 			foldMechSetpoint = (f.ARMED==1)? (HYBRID_FOLD_FWDFLT-10) : (HYBRID_FOLD_STOW+10);
 		#endif
@@ -911,14 +911,20 @@ void mixTable() {
 		motor[1] = PIDMIX(-1,-2/3, 0); 		//RIGHT
 		motor[2] = PIDMIX(+1,-2/3, 0);		//LEFT
 		servo[5] = constrain(conf.tri_yaw_middle + YAW_DIRECTION * axisPID[YAW], TRI_YAW_CONSTRAINT_MIN, TRI_YAW_CONSTRAINT_MAX); //REAR
-		servo[2] = HYBRID_TILT_HOVER;
+		servo[2] = HYBRID_TILT_HOVER; // *WORK NEEDED*
 		#if defined(TRI_HYBRID_FOLD_MECH)
 			foldMechSetpoint = (f.ARMED==1)? HYBRID_FOLD_HOVER : (HYBRID_FOLD_STOW+10);
 		#endif
 	}
 	#if defined(TRI_HYBRID_FOLD_MECH)
-		servo[3] = (analogRead(7)<foldMechSetpoint)? 2000 : 1000;
+		servo[3] = (analogRead(7)<foldMechSetpoint)? 2000 : 1000; // *WORK NEEDED*
 	#endif
+	
+	
+	
+	// Better Idea: rcOptions[BOXHYBRID_FF] Enables a proportional term, [0:255]
+	// Inc or Dec to 0 or 255 if BOXHYBRID_FF is on or off. Term is used to phase the
+	// motors and servos gently between the two modes, using the incrementer. What is loop speed?
   #endif
 
   

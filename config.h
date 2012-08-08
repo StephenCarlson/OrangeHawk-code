@@ -60,13 +60,13 @@
 	// Type B is the Bicopter Configuration: Front two rotate down, rear motor fixed. Google "IAI Panther".
 	// Type C is Combine, as in all three motors rotate forward.
 	// Uncomment this wing servo enable flag if you want the controller to do the wing servos
-	//#define TRI_HYBRID_WING_SERVOS
+	#define TRI_HYBRID_WING_SERVOS
 	// Otherwise, the servos can intercept the wires from the R/C receiver. 
 	// In which case, we may want to mix for the flying wing on the radio, and de-mix inside MultiWii
 	// De-mixing the R/C Rx inputs should work the same, regardless of if we use regular or the PPM Sum method in MultiWii
 	//#define DEMIX_PITCH_ROLL
 	// If a wing folding mechansim is present (meaning no 360-modified servo and a analog stop switch input), uncomment this:
-	//#define TRI_HYBRID_FOLD_MECH
+	#define TRI_HYBRID_FOLD_MECH
 	
 	#define HYBRID_TILT_HOVER	1150	// Servo PWM values
 	#define HYBRID_TILT_FWDFLT	1900
