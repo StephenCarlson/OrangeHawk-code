@@ -54,7 +54,7 @@
 	// Feedback for the draw pulley mechanism is formed by momentary push switches and resistors, such that a mid-level voltage
 	// with respect to VREF on the ADC means that the motor arms are in transit. Low or High means folded or extended, 
 	// respectively. Dang, is looks like MultiWii doesn't impliment the ADC. KK wins here. No actually, uses regular analogRead().
-	//#define TRICOPTER_HYBRID_TYPE_A 
+	#define TRICOPTER_HYBRID_TYPE_A 
 	//#define TRICOPTER_HYBRID_TYPE_B 
 	// Type A is the Axial Tail: A regular Tricopter with the yaw motor also rotating back for forward flight.
 	// Type B is the Bicopter Configuration: Front two rotate down, rear motor fixed. Google "IAI Panther".
