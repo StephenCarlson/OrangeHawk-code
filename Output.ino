@@ -917,7 +917,7 @@ void mixTable() {
 		#endif
 	}
 	#if defined(TRI_HYBRID_FOLD_MECH)
-		servo[3] = (analogRead(7)<foldMechSetpoint)? 2000 : 1000; // *WORK NEEDED*
+		servo[3] = (504<foldMechSetpoint)? 2000 : 1000; // *WORK NEEDED*
 	#endif
 	
 	

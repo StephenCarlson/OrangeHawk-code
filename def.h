@@ -138,9 +138,9 @@
   #define SERVO_3_PIN_HIGH           PORTC |= 1<<2;
   #define SERVO_3_PIN_LOW            PORTC &= ~(1<<2);
   #if !defined(MONGOOSE1_0)
-    #define SERVO_4_PINMODE            pinMode(12,OUTPUT); // new       - alt TILT_ROLL
-    #define SERVO_4_PIN_HIGH           PORTB |= 1<<4;
-    #define SERVO_4_PIN_LOW            PORTB &= ~(1<<4);
+    #define SERVO_4_PINMODE          pinMode(A3,OUTPUT); //pinMode(12,OUTPUT); // new       - alt TILT_ROLL
+    #define SERVO_4_PIN_HIGH         PORTC |= 1<<3; //PORTB |= 1<<4;
+    #define SERVO_4_PIN_LOW          PORTC &= ~(1<<3); //PORTB &= ~(1<<4);
   #endif
   #define SERVO_5_PINMODE            pinMode(11,OUTPUT); // BI LEFT
   #define SERVO_5_PIN_HIGH           PORTB |= 1<<3;
@@ -1008,7 +1008,7 @@
 #elif defined(VTAIL4)
  #define MULTITYPE 17
 #elif defined(TRICOPTER_HYBRID_TYPE_A)
- #define MULTITYPE 1
+ #define MULTITYPE 57
 #endif
 
 /**************************************************************************************/
