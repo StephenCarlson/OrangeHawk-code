@@ -887,7 +887,7 @@ void mixTable() {
     motor[3] = PIDMIX(+1, -1, -0); //FRONT_L
   #endif
   #ifdef TRICOPTER_HYBRID_TYPE_A
-		uint16_t tiltServoSetpoint = 0;
+		//int16_t tiltServoSetpoint = 0; Made Global for 50Hz loop
 	#if defined(TRI_HYBRID_FOLD_MECH)
 		int16_t foldMechSetpoint = 0; // uint16_t is a type mis-match on compare with analogRead()
 	#endif
@@ -899,8 +899,8 @@ void mixTable() {
 	#endif
 	if(rcOptions[BOXHYBRID_FF] == 1){ // Forward Flight
 		motor[0] = rcCommand[THROTTLE];		//REAR 		rcCommand[THROTTLE]
-		motor[1] = MINCOMMAND;				//RIGHT		0
-		motor[2] = MINCOMMAND;				//LEFT		0
+		motor[1] = (motor[1]>MINCOMMAND)? motor[1]-((HYBRID_TILT_INCVAL>>2)+1): MINCOMMAND;				//RIGHT		0
+		motor[2] = (motor[2]>MINCOMMAND)? motor[2]-((HYBRID_TILT_INCVAL>>2)+1): MINCOMMAND;				//LEFT		0
 		servo[5] = MIDRC;
 		tiltServoSetpoint = HYBRID_TILT_FWDFLT;
 		#if defined(TRI_HYBRID_FOLD_MECH)
@@ -917,7 +917,7 @@ void mixTable() {
 			foldMechSetpoint = (f.ARMED==1)? HYBRID_FOLD_HOVER : (HYBRID_FOLD_STOW+10);
 		#endif
 	}
-	servo[2] = (servo[2]<tiltServoSetpoint)? servo[2]+HYBRID_TILT_INCVAL : servo[2]-HYBRID_TILT_INCVAL;
+	//servo[2] = (servo[2]<tiltServoSetpoint)? servo[2]+HYBRID_TILT_INCVAL : servo[2]-HYBRID_TILT_INCVAL; // Put into 50Hz loop
 	#if defined(TRI_HYBRID_FOLD_MECH)
 		servo[3] = (504<foldMechSetpoint)? 2000 : 1000; // *WORK NEEDED*
 	#endif

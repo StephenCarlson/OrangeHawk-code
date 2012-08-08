@@ -66,11 +66,11 @@
 	// De-mixing the R/C Rx inputs should work the same, regardless of if we use regular or the PPM Sum method in MultiWii
 	//#define DEMIX_PITCH_ROLL
 	// If a wing folding mechansim is present (meaning no 360-modified servo and a analog stop switch input), uncomment this:
-	#define TRI_HYBRID_FOLD_MECH
+	//#define TRI_HYBRID_FOLD_MECH
 	
 	#define HYBRID_TILT_HOVER	1150	// Servo PWM values
 	#define HYBRID_TILT_FWDFLT	1900
-	#define HYBRID_TILT_INCVAL	4
+	#define HYBRID_TILT_INCVAL	17
 	#define HYBRID_FOLD_FWDFLT	1000	// ADC values to chase
 	#define HYBRID_FOLD_HOVER	480		
 	#define HYBRID_FOLD_STOW	80
@@ -163,7 +163,7 @@
       //#define MPU6050       //combo + ACC
 
       /* I2C accelerometer */
-      #define NUNCHUCK  // if you want to use the nunckuk connected to a WMP
+      //#define NUNCHUCK  // if you want to use the nunckuk connected to a WMP
       //#define MMA7455
       //#define ADXL345
       //#define BMA020

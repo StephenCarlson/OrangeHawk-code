@@ -207,6 +207,9 @@ static int16_t motor[NUMBER_MOTOR];
 #if defined(SERVO)
   static int16_t servo[8] = {1500,1500,1500,1500,1500,1500,1500,1500};
 #endif
+#if defined(TRICOPTER_HYBRID_TYPE_A)
+	static int16_t tiltServoSetpoint = 0; // Brought to global to use 50Hz loop for smoothing timing.
+#endif
 
 // ************************
 // EEPROM Layout definition
@@ -697,7 +700,7 @@ void loop () {
       #ifdef ALLOW_ARM_DISARM_VIA_TX_YAW
       } else if ( (rcData[YAW] < MINCHECK )  && f.ARMED) {
         if (rcDelayCommand == 20) f.ARMED = 0; // rcDelayCommand = 20 => 20x20ms = 0.4s = time to wait for a specific RC command to be acknowledged
-      } else if ( (rcData[YAW] > MAXCHECK ) && rcData[PITCH] < MAXCHECK && !f.ARMED && calibratingG == 0 && f.ACC_CALIBRATED) {
+      } else if ( (rcData[YAW] > MAXCHECK ) && rcData[PITCH] < MAXCHECK && !f.ARMED && calibratingG == 0){ // && f.ACC_CALIBRATED) {
         if (rcDelayCommand == 20) {
 	  f.ARMED = 1;
 	  headFreeModeHold = heading;
@@ -706,7 +709,7 @@ void loop () {
       #ifdef ALLOW_ARM_DISARM_VIA_TX_ROLL
       } else if ( (rcData[ROLL] < MINCHECK)  && f.ARMED) {
         if (rcDelayCommand == 20) f.ARMED = 0; // rcDelayCommand = 20 => 20x20ms = 0.4s = time to wait for a specific RC command to be acknowledged
-      } else if ( (rcData[ROLL] > MAXCHECK) && rcData[PITCH] < MAXCHECK && !f.ARMED && calibratingG == 0 && f.ACC_CALIBRATED) {
+      } else if ( (rcData[ROLL] > MAXCHECK) && rcData[PITCH] < MAXCHECK && !f.ARMED && calibratingG == 0){ // && f.ACC_CALIBRATED) {
         if (rcDelayCommand == 20) {
           f.ARMED = 1;
           headFreeModeHold = heading;
@@ -781,6 +784,12 @@ void loop () {
       }
     #endif
 
+	#if defined(TRICOPTER_HYBRID_TYPE_A)
+		servo[2] = (abs(servo[2]-tiltServoSetpoint)<HYBRID_TILT_INCVAL)? tiltServoSetpoint: (servo[2]<tiltServoSetpoint)?
+			servo[2]+HYBRID_TILT_INCVAL: 
+			servo[2]-HYBRID_TILT_INCVAL;
+	#endif
+	
     uint16_t auxState = 0;
     for(i=0;i<4;i++)
       auxState |= (rcData[AUX1+i]<1300)<<(3*i) | (1300<rcData[AUX1+i] && rcData[AUX1+i]<1700)<<(3*i+1) | (rcData[AUX1+i]>1700)<<(3*i+2);
