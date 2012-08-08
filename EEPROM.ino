@@ -21,7 +21,7 @@ void readEEPROM() {
   #if defined(POWERMETER)
     pAlarm = (uint32_t) conf.powerTrigger1 * (uint32_t) PLEVELSCALE * (uint32_t) PLEVELDIV; // need to cast before multiplying
   #endif
-  #ifdef FLYING_WING
+  #ifdef FLYING_WING || defined(TRICOPTER_HYBRID_TYPE_A)
     #ifdef LCD_CONF
       conf.wing_left_mid  = constrain(conf.wing_left_mid, WING_LEFT_MIN,  WING_LEFT_MAX); //LEFT
       conf.wing_right_mid = constrain(conf.wing_right_mid, WING_RIGHT_MIN, WING_RIGHT_MAX); //RIGHT
@@ -30,7 +30,7 @@ void readEEPROM() {
       conf.wing_right_mid = WING_RIGHT_MID;
     #endif
   #endif
-  #ifdef TRI
+  #if defined(TRI) || defined(TRICOPTER_HYBRID_TYPE_A)
     #ifdef LCD_CONF
       conf.tri_yaw_middle = constrain(conf.tri_yaw_middle, TRI_YAW_CONSTRAINT_MIN, TRI_YAW_CONSTRAINT_MAX); //REAR
     #else // w.o LCD support user may not find this value stored in eeprom, so always use the define value
@@ -73,7 +73,7 @@ void checkFirstTime() {
   for(uint8_t i=0;i<CHECKBOXITEMS;i++) {conf.activate[i] = 0;}
   conf.angleTrim[0] = 0; conf.angleTrim[1] = 0;
   conf.powerTrigger1 = 0;
-  #ifdef FLYING_WING
+  #ifdef FLYING_WING || defined(TRICOPTER_HYBRID_TYPE_A)
     conf.wing_left_mid  = WING_LEFT_MID; 
     conf.wing_right_mid = WING_RIGHT_MID; 
   #endif
@@ -81,7 +81,7 @@ void checkFirstTime() {
     conf.dynThrPID = 50;
     conf.rcExpo8   =  0;
   #endif
-  #ifdef TRI
+  #if defined(TRI) || defined(TRICOPTER_HYBRID_TYPE_A)
     conf.tri_yaw_middle = TRI_YAW_MIDDLE;
   #endif
   #if defined HELICOPTER || defined(AIRPLANE)|| defined(SINGLECOPTER)|| defined(DUALCOPTER)

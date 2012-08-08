@@ -887,24 +887,39 @@ void mixTable() {
     motor[3] = PIDMIX(+1, -1, -0); //FRONT_L
   #endif
   #ifdef TRICOPTER_HYBRID_TYPE_A
-	motor[0] = PIDMIX( 0,+4/3, 0); //REAR
-	motor[1] = PIDMIX(-1,-2/3, 0); //RIGHT
-	motor[2] = PIDMIX(+1,-2/3, 0); //LEFT
-	servo[5] = constrain(conf.tri_yaw_middle + YAW_DIRECTION * axisPID[YAW], TRI_YAW_CONSTRAINT_MIN, TRI_YAW_CONSTRAINT_MAX); //REAR
-	servo[0] = 0; // Motor Tilt
-	#if defined(TRI_HYBRID_WING_SERVOS)
-		#if defined(TRI_HYBRID_FOLD_MECH)
-			#define SEC_SERVO_TO 4
-		#else
-			#define SEC_SERVO_TO 3
-		#endif
-	#else
-		#if defined(TRI_HYBRID_FOLD_MECH)
-			#define SEC_SERVO_TO 2
-		#else
-			#define SEC_SERVO_TO 1
-		#endif
+	#if defined(TRI_HYBRID_FOLD_MECH)
+		uint16_t foldMechSetpoint = 0;
 	#endif
+	#if defined(TRI_HYBRID_WING_SERVOS) // Wings: 1 and 2, Tilt is 3, Fold is 4
+		servo[0]  = PITCH_DIRECTION_L * (rcData[PITCH]-MIDRC) + ROLL_DIRECTION_L * (rcData[ROLL]-MIDRC);
+		servo[1]  = PITCH_DIRECTION_R * (rcData[PITCH]-MIDRC) + ROLL_DIRECTION_R * (rcData[ROLL]-MIDRC);
+		servo[0]  = constrain(servo[0] + conf.wing_left_mid , WING_LEFT_MIN,  WING_LEFT_MAX );
+		servo[1]  = constrain(servo[1] + conf.wing_right_mid, WING_RIGHT_MIN, WING_RIGHT_MAX);
+	#endif
+	if(rcOptions[BOXHYBRID_FF] == 1){
+		motor[0] = rcCommand[THROTTLE];		//REAR 		rcCommand[THROTTLE]
+		motor[1] = MINCOMMAND;				//RIGHT		0
+		motor[2] = MINCOMMAND;				//LEFT		0
+		servo[5] = MIDRC;
+		servo[2] = HYBRID_TILT_FWDFLT; // Obviously, need to implement the Incrementer to slow servo
+		#if defined(TRI_HYBRID_FOLD_MECH)
+			foldMechSetpoint = (f.ARMED==1)? (HYBRID_FOLD_FWDFLT-10) : (HYBRID_FOLD_STOW+10);
+		#endif
+	}
+	else{ // Hover Mode
+		motor[0] = PIDMIX( 0,+4/3, 0); 		//REAR
+		motor[1] = PIDMIX(-1,-2/3, 0); 		//RIGHT
+		motor[2] = PIDMIX(+1,-2/3, 0);		//LEFT
+		servo[5] = constrain(conf.tri_yaw_middle + YAW_DIRECTION * axisPID[YAW], TRI_YAW_CONSTRAINT_MIN, TRI_YAW_CONSTRAINT_MAX); //REAR
+		servo[2] = HYBRID_TILT_HOVER;
+		#if defined(TRI_HYBRID_FOLD_MECH)
+			foldMechSetpoint = (f.ARMED==1)? HYBRID_FOLD_HOVER : (HYBRID_FOLD_STOW+10);
+		#endif
+	}
+	#if defined(TRI_HYBRID_FOLD_MECH)
+		servo[3] = (analogRead(7)<foldMechSetpoint)? 2000 : 1000;
+	#endif
+  #endif
 
   
   /****************                Cam stabilize Sevos             ******************/

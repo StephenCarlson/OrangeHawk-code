@@ -1063,7 +1063,7 @@
 /**************************************************************************************/
 /***************             motor and servo numbers               ********************/
 /**************************************************************************************/
-#if defined(BI) || defined(TRI) || defined(SERVO_TILT) || defined(GIMBAL) || defined(FLYING_WING) || defined(AIRPLANE) || defined(CAMTRIG) || defined(HELICOPTER) || defined(SERVO_MIX_TILT)|| defined(SINGLECOPTER)|| defined(DUALCOPTER)
+#if defined(BI) || defined(TRI) || defined(SERVO_TILT) || defined(GIMBAL) || defined(FLYING_WING) || defined(AIRPLANE) || defined(CAMTRIG) || defined(HELICOPTER) || defined(SERVO_MIX_TILT)|| defined(SINGLECOPTER)|| defined(DUALCOPTER) || defined(TRICOPTER_HYBRID_TYPE_A)
   #define SERVO
 #endif
 
@@ -1119,25 +1119,27 @@
     #define PRI_SERVO_TO     7
   #endif
 #elif defined(TRICOPTER_HYBRID_TYPE_A)
- #define NUMBER_MOTOR     3
- #define PRI_SERVO_FROM   6 // use only servo 6
- #define PRI_SERVO_TO     6
- #undef SERVO_TILT
- #undef CAMTRIG
- #define SEC_SERVO_FROM   1 // Servo 1: Rear Motor Tilt, Servo 2: 
-   #if defined(TRI_HYBRID_WING_SERVOS)
-     #if defined(TRI_HYBRID_FOLD_MECH)
-       #define SEC_SERVO_TO 4
-	 #else
-	   #define SEC_SERVO_TO 3
-	 #endif
-   #else
-     #if defined(TRI_HYBRID_FOLD_MECH)
-       #define SEC_SERVO_TO 2
-	 #else
-	   #define SEC_SERVO_TO 1
-	 #endif
-   #endif
+	#define NUMBER_MOTOR     3	// Use 3 Motors as usual for a Tri
+	#define PRI_SERVO_FROM   6	// Same Tail Servo as usual
+	#define PRI_SERVO_TO     6
+	#undef SERVO_TILT			// Remove existing servo functions
+	#undef CAMTRIG
+	#if defined(TRI_HYBRID_WING_SERVOS) // Wings: 1 and 2, Tilt is 3, Fold is 4
+		//#undef SERVO_MIX_TILT 
+		#define SEC_SERVO_FROM 1
+		#if defined(TRI_HYBRID_FOLD_MECH)
+			#define SEC_SERVO_TO 4
+		#else
+			#define SEC_SERVO_TO 3
+		#endif
+	#else
+		#define SEC_SERVO_FROM 3
+		#if defined(TRI_HYBRID_FOLD_MECH)
+			#define SEC_SERVO_TO 4
+		#else
+			#define SEC_SERVO_TO 3
+		#endif
+	#endif
 #endif
 
 

@@ -48,9 +48,10 @@ July  2012     V2.1
 #define BOXLEDMAX    11 // we want maximum illumination
 #define BOXLLIGHTS   12 // enable landing lights at any altitude
 #define BOXHEADADJ   13 // acquire heading for HEADFREE mode
+#define BOXHYBRID_FF 14 // Tricopter Flying-Wing Hybrid Activation for Forward Flight
 
 #define PIDITEMS 10
-#define CHECKBOXITEMS 14
+#define CHECKBOXITEMS 15
 
 const char boxnames[] PROGMEM = // names for dynamic generation of config GUI
   "ACC;"
@@ -67,6 +68,7 @@ const char boxnames[] PROGMEM = // names for dynamic generation of config GUI
   "LEDMAX;"
   "LLIGHTS;"
   "HEADADJ;"
+  "HYBRID_FF;"
 ;
 
 const char pidnames[] PROGMEM =
@@ -225,11 +227,11 @@ static struct {
   int16_t angleTrim[2];
   uint16_t activate[CHECKBOXITEMS];
   uint8_t powerTrigger1;
-  #ifdef FLYING_WING
+  #if defined(FLYING_WING) || defined(TRI_HYBRID_WING_SERVOS)
     uint16_t wing_left_mid;
     uint16_t wing_right_mid;
   #endif
-  #ifdef TRI
+  #if defined(TRI) || defined(TRICOPTER_HYBRID_TYPE_A)
     uint16_t tri_yaw_middle;
   #endif
   #if defined HELICOPTER || defined(AIRPLANE)|| defined(SINGLECOPTER)|| defined(DUALCOPTER)
@@ -645,6 +647,14 @@ void loop () {
             servo[1]  = conf.wing_right_mid;
             writeServos();
           #endif
+		  #if defined(TRICOPTER_HYBRID_TYPE_A)
+		    servo[5] = 1500;
+		    #if defined(TRI_HYBRID_WING_SERVOS)
+			  servo[0]  = conf.wing_left_mid;
+              servo[1]  = conf.wing_right_mid;
+			#endif
+			writeServos();
+		  #endif
           #ifdef AIRPLANE
             for(i = 4; i<7 ;i++) servo[i] = 1500;
             writeServos();

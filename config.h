@@ -53,7 +53,7 @@
 	// rotation servos can be driven by sharing from the wing servo output. Hence, this is a dual-mode vehicle.
 	// Feedback for the draw pulley mechanism is formed by momentary push switches and resistors, such that a mid-level voltage
 	// with respect to VREF on the ADC means that the motor arms are in transit. Low or High means folded or extended, 
-	// respectively. Dang, is looks like MultiWii doesn't impliment the ADC. KK wins here.
+	// respectively. Dang, is looks like MultiWii doesn't impliment the ADC. KK wins here. No actually, uses regular analogRead().
 	//#define TRICOPTER_HYBRID_TYPE_A 
 	//#define TRICOPTER_HYBRID_TYPE_B 
 	// Type A is the Axial Tail: A regular Tricopter with the yaw motor also rotating back for forward flight.
@@ -67,6 +67,13 @@
 	//#define DEMIX_PITCH_ROLL
 	// If a wing folding mechansim is present (meaning no 360-modified servo and a analog stop switch input), uncomment this:
 	//#define TRI_HYBRID_FOLD_MECH
+	
+	#define HYBRID_TILT_HOVER	1150	// Servo PWM values
+	#define HYBRID_TILT_FWDFLT	1900
+	#define HYBRID_TILT_INCVAL	5
+	#define HYBRID_FOLD_FWDFLT	1000	// ADC values to chase
+	#define HYBRID_FOLD_HOVER	480		
+	#define HYBRID_FOLD_STOW	80
 
   /****************************    Motor minthrottle    *******************************/
     /* Set the minimum throttle command sent to the ESC (Electronic Speed Controller)
