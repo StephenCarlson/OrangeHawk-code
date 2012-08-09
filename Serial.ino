@@ -94,8 +94,8 @@ void tailSerialReply() {
   serialize8(checksum);UartSendData();
 }
 
-void serializeNames(PGM_P s) {
-  for (PGM_P c = s; pgm_read_byte(c); c++) {
+void serializeNames(PGM_P s,uint8_t len) {
+  for (PGM_P c = s; c<(s+len); c++) { // pgm_read_byte(c)
     serialize8(pgm_read_byte(c));
   }
 }
@@ -217,13 +217,13 @@ void evaluateCommand() {
      serialize32(	f.ACC_MODE<<BOXACC|
 					f.BARO_MODE<<BOXBARO|
 					f.MAG_MODE<<BOXMAG|
-					f.ARMED<<BOXARM|
 					rcOptions[BOXCAMSTAB]<<BOXCAMSTAB | 
 					rcOptions[BOXCAMTRIG]<<BOXCAMTRIG |
+					f.ARMED<<BOXARM|
 					f.GPS_HOME_MODE<<BOXGPSHOME|
 					f.GPS_HOLD_MODE<<BOXGPSHOLD|
-					f.HEADFREE_MODE<<BOXHEADFREE|
 					f.PASSTHRU_MODE<<BOXPASSTHRU|
+					f.HEADFREE_MODE<<BOXHEADFREE|
 					rcOptions[BOXBEEPERON]<<BOXBEEPERON|
 					rcOptions[BOXLEDMAX]<<BOXLEDMAX|
 					rcOptions[BOXLLIGHTS]<<BOXLLIGHTS|
@@ -313,11 +313,11 @@ void evaluateCommand() {
      break;
    case MSP_BOXNAMES:
      headSerialReply(strlen_P(boxnames));
-     serializeNames(boxnames);
+     serializeNames(boxnames, strlen_P(boxnames));
      break;
    case MSP_PIDNAMES:
      headSerialReply(strlen_P(pidnames));
-     serializeNames(pidnames);
+     serializeNames(pidnames,strlen_P(pidnames));
      break;
    case MSP_MISC:
      headSerialReply(2);
