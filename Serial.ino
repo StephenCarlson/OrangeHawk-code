@@ -94,8 +94,8 @@ void tailSerialReply() {
   serialize8(checksum);UartSendData();
 }
 
-void serializeNames(PGM_P s,uint8_t len) {
-  for (PGM_P c = s; c<(s+len); c++) { // pgm_read_byte(c)
+void serializeNames(PGM_P s) {
+  for (PGM_P c = s; pgm_read_byte(c); c++) {
     serialize8(pgm_read_byte(c));
   }
 }
@@ -313,11 +313,11 @@ void evaluateCommand() {
      break;
    case MSP_BOXNAMES:
      headSerialReply(strlen_P(boxnames));
-     serializeNames(boxnames, strlen_P(boxnames));
+     serializeNames(boxnames);
      break;
    case MSP_PIDNAMES:
      headSerialReply(strlen_P(pidnames));
-     serializeNames(pidnames,strlen_P(pidnames));
+     serializeNames(pidnames);
      break;
    case MSP_MISC:
      headSerialReply(2);
