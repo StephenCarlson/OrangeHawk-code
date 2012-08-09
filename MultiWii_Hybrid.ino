@@ -208,7 +208,7 @@ static int16_t motor[NUMBER_MOTOR];
   static int16_t servo[8] = {1500,1500,1500,1500,1500,1500,1500,1500};
 #endif
 #if defined(TRICOPTER_HYBRID_TYPE_A)
-	static int16_t tiltServoSetpoint = 0; // Brought to global to use 50Hz loop for smoothing timing.
+	static int16_t hybridTiltFactor = 0; // [0:100] for [Hover:Forward Flight], is a subtract term
 #endif
 
 // ************************
@@ -785,6 +785,18 @@ void loop () {
     #endif
 
 	#if defined(TRICOPTER_HYBRID_TYPE_A)
+		if(rcOptions[BOXHYBRID_FF] == 1){ // Forward Flight
+			tiltServoSetpoint = HYBRID_TILT_FWDFLT;
+			#if defined(TRI_HYBRID_FOLD_MECH)
+				foldMechSetpoint = (f.ARMED==1)? (HYBRID_FOLD_FWDFLT-10) : (HYBRID_FOLD_STOW+10);
+			#endif
+		} else{ // Hover Mode
+			tiltServoSetpoint = HYBRID_TILT_HOVER;
+			#if defined(TRI_HYBRID_FOLD_MECH)
+				foldMechSetpoint = (f.ARMED==1)? HYBRID_FOLD_HOVER : (HYBRID_FOLD_STOW+10);
+			#endif
+		}
+		
 		servo[2] = (abs(servo[2]-tiltServoSetpoint)<HYBRID_TILT_INCVAL)? tiltServoSetpoint: (servo[2]<tiltServoSetpoint)?
 			servo[2]+HYBRID_TILT_INCVAL: 
 			servo[2]-HYBRID_TILT_INCVAL;

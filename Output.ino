@@ -898,6 +898,14 @@ void mixTable() {
 		servo[0]  = constrain(servo[0] + conf.wing_left_mid , WING_LEFT_MIN,  WING_LEFT_MAX );
 		servo[1]  = constrain(servo[1] + conf.wing_right_mid, WING_RIGHT_MIN, WING_RIGHT_MAX);
 	#endif
+	
+	motor[0] = rcCommand[THROTTLE] + (hybridTiltFactor/htsMax)*axisPID[PITCH]*4/3;	//REAR
+	motor[1] = PIDMIX(-1,-2/3, 0)*(hybridTiltFactor/htsMax);		//RIGHT
+	motor[2] = PIDMIX(+1,-2/3, 0)*(hybridTiltFactor/htsMax);		//LEFT
+	servo[5] = constrain(conf.tri_yaw_middle + (hybridTiltFactor/htsMax)*(YAW_DIRECTION * axisPID[YAW]), TRI_YAW_CONSTRAINT_MIN, TRI_YAW_CONSTRAINT_MAX);
+	
+	
+	/*
 	if(rcOptions[BOXHYBRID_FF] == 1){ // Forward Flight
 		motor[0] = rcCommand[THROTTLE];		//REAR 		rcCommand[THROTTLE]
 		motor[1] = (motor[1]>MINCOMMAND)? motor[1]-((HYBRID_TILT_INCVAL>>2)+1): MINCOMMAND;				//RIGHT		0
@@ -918,6 +926,7 @@ void mixTable() {
 			foldMechSetpoint = (f.ARMED==1)? HYBRID_FOLD_HOVER : (HYBRID_FOLD_STOW+10);
 		#endif
 	}
+	*/
 	debug[0] = servo[2];
 	//servo[2] = (servo[2]<tiltServoSetpoint)? servo[2]+HYBRID_TILT_INCVAL : servo[2]-HYBRID_TILT_INCVAL; // Put into 50Hz loop
 	#if defined(TRI_HYBRID_FOLD_MECH)
