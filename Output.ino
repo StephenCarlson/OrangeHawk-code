@@ -89,6 +89,7 @@ void writeServos() {
           atomicServo[i] = (servo[i]-1000)<<4;
         #endif
       }
+	  debug[1] = atomicServo[2];
     #endif
     #if defined(SEC_SERVO_FROM)   // write secundary servos
       #if defined(SERVO_TILT) && defined(MMSERVOGIMBAL)
@@ -917,6 +918,7 @@ void mixTable() {
 			foldMechSetpoint = (f.ARMED==1)? HYBRID_FOLD_HOVER : (HYBRID_FOLD_STOW+10);
 		#endif
 	}
+	debug[0] = servo[2];
 	//servo[2] = (servo[2]<tiltServoSetpoint)? servo[2]+HYBRID_TILT_INCVAL : servo[2]-HYBRID_TILT_INCVAL; // Put into 50Hz loop
 	#if defined(TRI_HYBRID_FOLD_MECH)
 		servo[3] = (504<foldMechSetpoint)? 2000 : 1000; // *WORK NEEDED*
