@@ -902,8 +902,13 @@ void mixTable() {
 	motor[0] = rcCommand[THROTTLE] + (hybridTiltFactor/HYBRID_TF_MAX)*axisPID[PITCH]*4/3;	//REAR , Expect this code to crash the processor?
 	motor[1] = ((int32_t)(PIDMIX(-1,-2/3, 0))*hybridTiltFactor)/HYBRID_TF_MAX + ((int32_t)(MINCOMMAND)*(HYBRID_TF_MAX-hybridTiltFactor))/HYBRID_TF_MAX;		//RIGHT
 	motor[2] = ((int32_t)(PIDMIX(+1,-2/3, 0))*hybridTiltFactor)/HYBRID_TF_MAX + ((int32_t)(MINCOMMAND)*(HYBRID_TF_MAX-hybridTiltFactor))/HYBRID_TF_MAX;		//LEFT
-	servo[5] = constrain(conf.tri_yaw_middle + (hybridTiltFactor/HYBRID_TF_MAX)*(YAW_DIRECTION * axisPID[YAW]), TRI_YAW_CONSTRAINT_MIN, TRI_YAW_CONSTRAINT_MAX);
-	
+	servo[5] = constrain(conf.tri_yaw_middle + ((int32_t)(hybridTiltFactor)*(YAW_DIRECTION * axisPID[YAW]))/HYBRID_TF_MAX, TRI_YAW_CONSTRAINT_MIN, TRI_YAW_CONSTRAINT_MAX);
+	// Actually, I know this is going to crash/hog the processor. Trick in mind to fix:
+	// 1: The real information is the range between 1000 and 2000; do math for range [0:1000], add offset later
+	// 2: Don't really need 100 steps of resolution. Lets do for 30; 32767/30 ~= 1092, which is good for [0:1000]
+	// Oh, but 30 is not good for incrementing at 50 Hz, want ~1 sec transition, or 50 counts.
+	// Fix: Use larger 50Hz incrementer variable, right shift it to [0:30] range.
+	// After uploading to hybrid, behavior.....
 	
 	/*
 	if(rcOptions[BOXHYBRID_FF] == 1){ // Forward Flight
@@ -927,7 +932,7 @@ void mixTable() {
 		#endif
 	}
 	*/
-	debug[0] = servo[2];
+	
 	//servo[2] = (servo[2]<tiltServoSetpoint)? servo[2]+HYBRID_TILT_INCVAL : servo[2]-HYBRID_TILT_INCVAL; // Put into 50Hz loop
 	#if defined(TRI_HYBRID_FOLD_MECH)
 		servo[3] = (504<foldMechSetpoint)? 2000 : 1000; // *WORK NEEDED*

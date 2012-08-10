@@ -792,15 +792,16 @@ void loop () {
 				// foldMechSetpoint = (f.ARMED==1)? (HYBRID_FOLD_FWDFLT-10) : (HYBRID_FOLD_STOW+10);
 			// #endif
 		} else{ // Hover Mode
-			hybridTiltFactor = ((HYBRID_TF_MAX-hybridTiltFactor)>HYBRID_TILT_INCVAL)? hybridTiltFactor+HYBRID_TILT_INCVAL : HYBRID_TF_MAX;
+			hybridTiltFactor = ((hybridTiltFactor+HYBRID_TILT_INCVAL)<HYBRID_TF_MAX)? hybridTiltFactor+HYBRID_TILT_INCVAL : HYBRID_TF_MAX;
 			//tiltServoSetpoint = HYBRID_TILT_HOVER;
 			// #if defined(TRI_HYBRID_FOLD_MECH)
 				// foldMechSetpoint = (f.ARMED==1)? HYBRID_FOLD_HOVER : (HYBRID_FOLD_STOW+10);
 			// #endif
 		}
 		
-		servo[2] = HYBRID_TILT_HOVER*(hybridTiltFactor/HYBRID_TF_MAX) + HYBRID_TILT_FWDFLT*(HYBRID_TF_MAX-hybridTiltFactor)/HYBRID_TF_MAX;
-		
+		servo[2] = ((int32_t)(HYBRID_TILT_HOVER)*(hybridTiltFactor))/HYBRID_TF_MAX + ((int32_t)(HYBRID_TILT_FWDFLT)*(HYBRID_TF_MAX-hybridTiltFactor))/HYBRID_TF_MAX;
+		debug[0] = servo[2];
+		debug[3] = hybridTiltFactor;
 		// servo[2] = (abs(servo[2]-tiltServoSetpoint)<HYBRID_TILT_INCVAL)? tiltServoSetpoint: (servo[2]<tiltServoSetpoint)?
 			// servo[2]+HYBRID_TILT_INCVAL: 
 			// servo[2]-HYBRID_TILT_INCVAL;
