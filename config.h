@@ -79,7 +79,7 @@
 	#define HYBRID_FOLD_FWDFLT	1000	// ADC values to chase
 	#define HYBRID_FOLD_HOVER	480		
 	#define HYBRID_FOLD_STOW	80
-	#define HYBRID_TF_MAX		100
+	#define HYBRID_TF_MAX		120 // >>2 becomes 30, which, for (2000-1000)*30, is less than 32767 (16-bit signed max possible)
 
   /****************************    Motor minthrottle    *******************************/
     /* Set the minimum throttle command sent to the ESC (Electronic Speed Controller)

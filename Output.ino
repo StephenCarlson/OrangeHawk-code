@@ -899,10 +899,30 @@ void mixTable() {
 		servo[1]  = constrain(servo[1] + conf.wing_right_mid, WING_RIGHT_MIN, WING_RIGHT_MAX);
 	#endif
 	
-	motor[0] = rcCommand[THROTTLE] + ((int32_t)hybridTiltFactor*axisPID[PITCH]*4/3)/HYBRID_TF_MAX;	//REAR , Expect this code to crash the processor?
-	motor[1] = ((int32_t)(PIDMIX(-1,-2/3, 0))*hybridTiltFactor)/HYBRID_TF_MAX + ((int32_t)(MINCOMMAND)*(HYBRID_TF_MAX-hybridTiltFactor))/HYBRID_TF_MAX;		//RIGHT
-	motor[2] = ((int32_t)(PIDMIX(+1,-2/3, 0))*hybridTiltFactor)/HYBRID_TF_MAX + ((int32_t)(MINCOMMAND)*(HYBRID_TF_MAX-hybridTiltFactor))/HYBRID_TF_MAX;		//LEFT
-	servo[5] = constrain(conf.tri_yaw_middle + ((int32_t)(hybridTiltFactor)*(YAW_DIRECTION * axisPID[YAW]))/HYBRID_TF_MAX, TRI_YAW_CONSTRAINT_MIN, TRI_YAW_CONSTRAINT_MAX);
+	
+	//motor[0] = PIDMIX( 0,+4/3, 0);		//REAR
+	motor[0] = axisPID[PITCH]*4/3;
+	motor[1] = PIDMIX(-1,-2/3, 0); 		//RIGHT
+	motor[2] = PIDMIX(+1,-2/3, 0);		//LEFT
+	servo[5] = constrain(conf.tri_yaw_middle + YAW_DIRECTION * axisPID[YAW], TRI_YAW_CONSTRAINT_MIN, TRI_YAW_CONSTRAINT_MAX); //REAR
+	
+	if(hybridTiltFactor<HYBRID_TF_MAX){
+		motor[0] = (motor[0]>2000)? 2000: motor[0];
+		motor[1] = (motor[1]>2000)? 2000: motor[1];
+		motor[2] = (motor[2]>2000)? 2000: motor[2];
+		
+		motor[0] = motor[0]*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2);
+		motor[1] = (motor[1]-1000)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2)+1000;
+		motor[2] = (motor[2]-1000)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2)+1000;
+		servo[5] = (servo[5]-conf.tri_yaw_middle)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2)+conf.tri_yaw_middle;
+	}
+	motor[0] += rcCommand[THROTTLE];
+	
+	
+	// motor[0] = rcCommand[THROTTLE] + ((int32_t)hybridTiltFactor*axisPID[PITCH]*4/3)/HYBRID_TF_MAX;	//REAR , Expect this code to crash the processor?
+	// motor[1] = ((int32_t)(PIDMIX(-1,-2/3, 0))*hybridTiltFactor)/HYBRID_TF_MAX + ((int32_t)(MINCOMMAND)*(HYBRID_TF_MAX-hybridTiltFactor))/HYBRID_TF_MAX;		//RIGHT
+	// motor[2] = ((int32_t)(PIDMIX(+1,-2/3, 0))*hybridTiltFactor)/HYBRID_TF_MAX + ((int32_t)(MINCOMMAND)*(HYBRID_TF_MAX-hybridTiltFactor))/HYBRID_TF_MAX;		//LEFT
+	// servo[5] = constrain(conf.tri_yaw_middle + ((int32_t)(hybridTiltFactor)*(YAW_DIRECTION * axisPID[YAW]))/HYBRID_TF_MAX, TRI_YAW_CONSTRAINT_MIN, TRI_YAW_CONSTRAINT_MAX);
 	// Actually, I know this is going to crash/hog the processor. Trick in mind to fix:
 	// 1: The real information is the range between 1000 and 2000; do math for range [0:1000], add offset later
 	// 2: Don't really need 100 steps of resolution. Lets do for 30; 32767/30 ~= 1092, which is good for [0:1000]

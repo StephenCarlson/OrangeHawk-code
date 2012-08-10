@@ -235,7 +235,7 @@ static struct {
     uint16_t wing_right_mid;
   #endif
   #if defined(TRI) || defined(TRICOPTER_HYBRID_TYPE_A)
-    uint16_t tri_yaw_middle;
+    int16_t tri_yaw_middle;
   #endif
   #if defined HELICOPTER || defined(AIRPLANE)|| defined(SINGLECOPTER)|| defined(DUALCOPTER)
     int16_t servoTrim[8];
@@ -801,7 +801,8 @@ void loop () {
 		
 		servo[2] = ((int32_t)(HYBRID_TILT_HOVER)*(hybridTiltFactor))/HYBRID_TF_MAX + ((int32_t)(HYBRID_TILT_FWDFLT)*(HYBRID_TF_MAX-hybridTiltFactor))/HYBRID_TF_MAX;
 		debug[0] = servo[2];
-		debug[3] = hybridTiltFactor;
+		debug[2] = hybridTiltFactor;
+		debug[3] = (hybridTiltFactor==HYBRID_TF_MAX)? 1:0;
 		// servo[2] = (abs(servo[2]-tiltServoSetpoint)<HYBRID_TILT_INCVAL)? tiltServoSetpoint: (servo[2]<tiltServoSetpoint)?
 			// servo[2]+HYBRID_TILT_INCVAL: 
 			// servo[2]-HYBRID_TILT_INCVAL;
