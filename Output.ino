@@ -909,11 +909,11 @@ void mixTable() {
 	if(hybridTiltFactor<HYBRID_TF_MAX){
 		motor[0] = (motor[0]>2000)? 2000: motor[0];
 		motor[1] = (motor[1]>2000)? 2000: motor[1];
-		motor[2] = (motor[2]>2000)? 2000: motor[2];
+		motor[2] = (motor[2]>2000)? 2000: motor[2]; // Assume MINTHROTTLE always >1000. 1092 actual ceiling before math breaks. (At HYBRID_TF_MAX>>2 = 30)
 		
 		motor[0] = motor[0]*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2);
-		motor[1] = (motor[1]-1000)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2)+1000;
-		motor[2] = (motor[2]-1000)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2)+1000;
+		motor[1] = (motor[1]-MINTHROTTLE)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2)+MINTHROTTLE;
+		motor[2] = (motor[2]-MINTHROTTLE)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2)+MINTHROTTLE;
 		servo[5] = (servo[5]-conf.tri_yaw_middle)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2)+conf.tri_yaw_middle;
 	}
 	motor[0] += rcCommand[THROTTLE];

@@ -75,7 +75,7 @@
 	
 	#define HYBRID_TILT_HOVER	1004	// Servo PWM values
 	#define HYBRID_TILT_FWDFLT	2020
-	#define HYBRID_TILT_INCVAL	1
+	#define HYBRID_TILT_INCVAL	2
 	#define HYBRID_FOLD_FWDFLT	1000	// ADC values to chase
 	#define HYBRID_FOLD_HOVER	480		
 	#define HYBRID_FOLD_STOW	80
