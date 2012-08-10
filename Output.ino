@@ -899,10 +899,10 @@ void mixTable() {
 		servo[1]  = constrain(servo[1] + conf.wing_right_mid, WING_RIGHT_MIN, WING_RIGHT_MAX);
 	#endif
 	
-	motor[0] = rcCommand[THROTTLE] + (hybridTiltFactor/htsMax)*axisPID[PITCH]*4/3;	//REAR
-	motor[1] = PIDMIX(-1,-2/3, 0)*(hybridTiltFactor/htsMax);		//RIGHT
-	motor[2] = PIDMIX(+1,-2/3, 0)*(hybridTiltFactor/htsMax);		//LEFT
-	servo[5] = constrain(conf.tri_yaw_middle + (hybridTiltFactor/htsMax)*(YAW_DIRECTION * axisPID[YAW]), TRI_YAW_CONSTRAINT_MIN, TRI_YAW_CONSTRAINT_MAX);
+	motor[0] = rcCommand[THROTTLE] + (hybridTiltFactor/HYBRID_TF_MAX)*axisPID[PITCH]*4/3;	//REAR , Expect this code to crash the processor?
+	motor[1] = ((int32_t)(PIDMIX(-1,-2/3, 0))*hybridTiltFactor)/HYBRID_TF_MAX + ((int32_t)(MINCOMMAND)*(HYBRID_TF_MAX-hybridTiltFactor))/HYBRID_TF_MAX;		//RIGHT
+	motor[2] = ((int32_t)(PIDMIX(+1,-2/3, 0))*hybridTiltFactor)/HYBRID_TF_MAX + ((int32_t)(MINCOMMAND)*(HYBRID_TF_MAX-hybridTiltFactor))/HYBRID_TF_MAX;		//LEFT
+	servo[5] = constrain(conf.tri_yaw_middle + (hybridTiltFactor/HYBRID_TF_MAX)*(YAW_DIRECTION * axisPID[YAW]), TRI_YAW_CONSTRAINT_MIN, TRI_YAW_CONSTRAINT_MAX);
 	
 	
 	/*
