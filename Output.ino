@@ -899,7 +899,7 @@ void mixTable() {
 		servo[1]  = constrain(servo[1] + conf.wing_right_mid, WING_RIGHT_MIN, WING_RIGHT_MAX);
 	#endif
 	
-	motor[0] = rcCommand[THROTTLE] + (hybridTiltFactor/HYBRID_TF_MAX)*axisPID[PITCH]*4/3;	//REAR , Expect this code to crash the processor?
+	motor[0] = rcCommand[THROTTLE] + ((int32_t)hybridTiltFactor*axisPID[PITCH]*4/3)/HYBRID_TF_MAX;	//REAR , Expect this code to crash the processor?
 	motor[1] = ((int32_t)(PIDMIX(-1,-2/3, 0))*hybridTiltFactor)/HYBRID_TF_MAX + ((int32_t)(MINCOMMAND)*(HYBRID_TF_MAX-hybridTiltFactor))/HYBRID_TF_MAX;		//RIGHT
 	motor[2] = ((int32_t)(PIDMIX(+1,-2/3, 0))*hybridTiltFactor)/HYBRID_TF_MAX + ((int32_t)(MINCOMMAND)*(HYBRID_TF_MAX-hybridTiltFactor))/HYBRID_TF_MAX;		//LEFT
 	servo[5] = constrain(conf.tri_yaw_middle + ((int32_t)(hybridTiltFactor)*(YAW_DIRECTION * axisPID[YAW]))/HYBRID_TF_MAX, TRI_YAW_CONSTRAINT_MIN, TRI_YAW_CONSTRAINT_MAX);
@@ -908,7 +908,7 @@ void mixTable() {
 	// 2: Don't really need 100 steps of resolution. Lets do for 30; 32767/30 ~= 1092, which is good for [0:1000]
 	// Oh, but 30 is not good for incrementing at 50 Hz, want ~1 sec transition, or 50 counts.
 	// Fix: Use larger 50Hz incrementer variable, right shift it to [0:30] range.
-	// After uploading to hybrid, behavior.....
+	// After uploading int32_t version to hybrid, behavior..... good! Still doing 30 anyway.
 	
 	/*
 	if(rcOptions[BOXHYBRID_FF] == 1){ // Forward Flight
