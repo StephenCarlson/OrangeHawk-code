@@ -917,6 +917,21 @@ void mixTable() {
 		servo[5] = (servo[5]-conf.tri_yaw_middle)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2)+conf.tri_yaw_middle;
 	}
 	motor[0] += rcCommand[THROTTLE];
+	// 10 Aug 2012
+	// Next Step: try to fill as much as the cos curve as possible.
+	// Wolfram Alpha Visualization: plot cos(x*pi/2) and y=1-x from 0 to 1
+	// Further: plot cos(x*pi/2) and y=1-x and (cos(x*pi/2)-(1-x)) from 0 to 1
+	// Find max value: max value of cos(x*pi/2)-(1-x) on interval 0 to 1
+	// Gives 2*arcsin(2/pi)/pi, or .439
+	// Well, .5 isn't a bad spot to center the kink in the approximation function I'll make...
+	// cos(.5) = .8776, and y=1-x is .5, so we need to make a piecewise funciton .3776 above 1-x
+	// The equations are y=1-.6x for 0 to .5 and -1.4(x-1) for .5 to 1, intersection at .7 (cos pi/4)
+	// Add 40% of x for x[0:.5*TiltAngleVar] and 140% x - 40% of x for x[.5:end]
+	// Lets do cos(pi/8), or 22.5 deg, .25 tilt sweep, for second and final point:
+	
+	// Journal: Miracle w/ Ryler, attempt to move out, late night coding.
+	// 
+	
 	
 	
 	// motor[0] = rcCommand[THROTTLE] + ((int32_t)hybridTiltFactor*axisPID[PITCH]*4/3)/HYBRID_TF_MAX;	//REAR , Expect this code to crash the processor?
