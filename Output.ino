@@ -893,9 +893,9 @@ void mixTable() {
 		int16_t foldMechSetpoint = 0; // uint16_t is a type mis-match on compare with analogRead()
 	#endif
 	#if defined(TRI_HYBRID_WING_SERVOS) // Wings: 1 and 2, Tilt is 3, Fold is 4
-		servo[0]  = PITCH_DIRECTION_L * (rcData[PITCH]-MIDRC) + ROLL_DIRECTION_L * (rcData[ROLL]-MIDRC);
-		servo[1]  = PITCH_DIRECTION_R * (rcData[PITCH]-MIDRC) + ROLL_DIRECTION_R * (rcData[ROLL]-MIDRC);
-		servo[0]  = constrain(servo[0] + conf.wing_left_mid , WING_LEFT_MIN,  WING_LEFT_MAX );
+		servo[0]  = (PITCH_DIRECTION_L * (rcData[PITCH]-MIDRC) + ROLL_DIRECTION_L * (rcData[ROLL]-MIDRC))/2;
+		servo[1]  = (PITCH_DIRECTION_R * (rcData[PITCH]-MIDRC) + ROLL_DIRECTION_R * (rcData[ROLL]-MIDRC))/2;
+		servo[0]  = constrain(servo[0] + conf.wing_left_mid,  WING_LEFT_MIN,  WING_LEFT_MAX );
 		servo[1]  = constrain(servo[1] + conf.wing_right_mid, WING_RIGHT_MIN, WING_RIGHT_MAX);
 	#endif
 	
@@ -912,9 +912,13 @@ void mixTable() {
 		motor[2] = (motor[2]>2000)? 2000: motor[2]; // Assume MINTHROTTLE always >1000. 1092 actual ceiling before math breaks. (At HYBRID_TF_MAX>>2 = 30)
 		
 		motor[0] = motor[0]*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2);
-		motor[1] = (motor[1]-MINTHROTTLE)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2)+MINTHROTTLE;
-		motor[2] = (motor[2]-MINTHROTTLE)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2)+MINTHROTTLE;
+		motor[1] = (hybridTiltFactor>(HYBRID_TF_MAX*3/4))? motor[1]:((motor[1]-MINTHROTTLE)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2))*4/3+MINTHROTTLE;
+		motor[2] = (hybridTiltFactor>(HYBRID_TF_MAX*3/4))? motor[2]:((motor[2]-MINTHROTTLE)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2))*4/3+MINTHROTTLE;
 		servo[5] = (servo[5]-conf.tri_yaw_middle)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2)+conf.tri_yaw_middle;
+		
+		// Old Linear Methods for front thrust values
+		// motor[1] = (motor[1]-MINTHROTTLE)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2)+MINTHROTTLE;
+		// motor[2] = (motor[2]-MINTHROTTLE)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2)+MINTHROTTLE;
 	}
 	motor[0] += rcCommand[THROTTLE];
 	// 10 Aug 2012
@@ -1279,7 +1283,7 @@ void mixTable() {
   maxMotor=motor[0];
   for(i=1;i< NUMBER_MOTOR;i++)
     if (motor[i]>maxMotor) maxMotor=motor[i];
-  for (i = 0; i < NUMBER_MOTOR; i++) {
+  for (i = 0; i < NUMBER_MOTOR; i++){
     if (maxMotor > MAXTHROTTLE) // this is a way to still have good gyro corrections if at least one motor reaches its max.
       motor[i] -= maxMotor - MAXTHROTTLE;
     motor[i] = constrain(motor[i], MINTHROTTLE, MAXTHROTTLE);    
@@ -1289,6 +1293,9 @@ void mixTable() {
       #else
         motor[i] = MINCOMMAND;
       #endif
+	#if defined(TRICOPTER_HYBRID_TYPE_A)
+		if(hybridTiltFactor==0 && (i==1 || i==2)) motor[i] = MINCOMMAND;
+	#endif
     if (!f.ARMED)
       motor[i] = MINCOMMAND;
   }

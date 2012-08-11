@@ -75,7 +75,7 @@
 	
 	#define HYBRID_TILT_HOVER	1004	// Servo PWM values
 	#define HYBRID_TILT_FWDFLT	2020
-	#define HYBRID_TILT_INCVAL	2
+	#define HYBRID_TILT_INCVAL	3
 	#define HYBRID_FOLD_FWDFLT	1000	// ADC values to chase
 	#define HYBRID_FOLD_HOVER	480		
 	#define HYBRID_FOLD_STOW	80
@@ -249,8 +249,8 @@
     /* you can change change servo orientation and servo min/max values here
        valid for all flight modes, even passThrough mode
        need to setup servo directions here; no need to swap servos amongst channels at rx */
-    #define PITCH_DIRECTION_L 1 // left servo - pitch orientation
-    #define PITCH_DIRECTION_R -1  // right servo - pitch orientation (opposite sign to PITCH_DIRECTION_L, if servos are mounted in mirrored orientation)
+    #define PITCH_DIRECTION_L (1) // left servo - pitch orientation
+    #define PITCH_DIRECTION_R (-1)  // right servo - pitch orientation (opposite sign to PITCH_DIRECTION_L, if servos are mounted in mirrored orientation)
     #define ROLL_DIRECTION_L 1 // left servo - roll orientation
     #define ROLL_DIRECTION_R 1  // right servo - roll orientation  (same sign as ROLL_DIRECTION_L, if servos are mounted in mirrored orientation)
     #define WING_LEFT_MID  1500 // left servo center pos. - use this for initial trim; later trim midpoint via LCD
