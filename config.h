@@ -75,7 +75,7 @@
 	
 	#define HYBRID_TILT_HOVER	1004	// Servo PWM values
 	#define HYBRID_TILT_FWDFLT	2020
-	#define HYBRID_TILT_INCVAL	3
+	#define HYBRID_TILT_INCVAL	1
 	#define HYBRID_FOLD_FWDFLT	1000	// ADC values to chase
 	#define HYBRID_FOLD_HOVER	480		
 	#define HYBRID_FOLD_STOW	80
@@ -198,7 +198,7 @@
       //#define ADCACC
 
       /* individual sensor orientation */
-      //#define ACC_ORIENTATION(X, Y, Z)  {accADC[ROLL]  =  Y; accADC[PITCH]  = -X; accADC[YAW]  = Z;}
+      #define ACC_ORIENTATION(X, Y, Z)  {accADC[ROLL]  =  X; accADC[PITCH]  = -Y; accADC[YAW]  = -Z;}
       //#define GYRO_ORIENTATION(X, Y, Z) {gyroADC[ROLL] = -Y; gyroADC[PITCH] =  X; gyroADC[YAW] = Z;}
       //#define MAG_ORIENTATION(X, Y, Z)  {magADC[ROLL]  = X; magADC[PITCH]  = Y; magADC[YAW]  = Z;}
 

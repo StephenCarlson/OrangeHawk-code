@@ -1293,9 +1293,9 @@ void mixTable() {
       #else
         motor[i] = MINCOMMAND;
       #endif
-	#if defined(TRICOPTER_HYBRID_TYPE_A)
-		if(hybridTiltFactor==0 && (i==1 || i==2)) motor[i] = MINCOMMAND;
-	#endif
+	// #if defined(TRICOPTER_HYBRID_TYPE_A)
+		// if(hybridTiltFactor==0 && (i==1 || i==2)) motor[i] = MINCOMMAND;
+	// #endif
     if (!f.ARMED)
       motor[i] = MINCOMMAND;
   }
