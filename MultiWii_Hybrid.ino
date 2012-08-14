@@ -651,7 +651,7 @@ void loop () {
             writeServos();
           #endif
 		  #if defined(TRICOPTER_HYBRID_TYPE_A)
-		    servo[5] = 1500;
+		    servo[5] = conf.tri_yaw_middle;
 		    #if defined(TRI_HYBRID_WING_SERVOS)
 			  servo[0]  = conf.wing_left_mid;
               servo[1]  = conf.wing_right_mid;
@@ -803,7 +803,7 @@ void loop () {
 		debug[0] = servo[2];
 		// debug[1] is the atomicServo[2] value
 		debug[2] = hybridTiltFactor;
-		debug[3] = (hybridTiltFactor==HYBRID_TF_MAX)? 1:0;
+		debug[3] = (hybridTiltFactor>=HYBRID_TF_MAX)? 1:0;
 		// servo[2] = (abs(servo[2]-tiltServoSetpoint)<HYBRID_TILT_INCVAL)? tiltServoSetpoint: (servo[2]<tiltServoSetpoint)?
 			// servo[2]+HYBRID_TILT_INCVAL: 
 			// servo[2]-HYBRID_TILT_INCVAL;

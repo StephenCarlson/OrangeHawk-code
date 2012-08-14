@@ -73,9 +73,9 @@
 	// If a wing folding mechansim is present (meaning no 360-modified servo and a analog stop switch input), uncomment this:
 	//#define TRI_HYBRID_FOLD_MECH
 	
-	#define HYBRID_TILT_HOVER	1004	// Servo PWM values
-	#define HYBRID_TILT_FWDFLT	2020
-	#define HYBRID_TILT_INCVAL	1
+	#define HYBRID_TILT_HOVER	1005	// Servo PWM values
+	#define HYBRID_TILT_FWDFLT	2000
+	#define HYBRID_TILT_INCVAL	3
 	#define HYBRID_FOLD_FWDFLT	1000	// ADC values to chase
 	#define HYBRID_FOLD_HOVER	480		
 	#define HYBRID_FOLD_STOW	80
@@ -212,12 +212,12 @@
 /*************************************************************************************************/
 
   /********************************    TRI    *********************************/
-    #define YAW_DIRECTION 1
+    #define YAW_DIRECTION -1
     //#define YAW_DIRECTION -1 // if you want to reverse the yaw correction direction
     /* you can change the tricopter servo travel here */
       #define TRI_YAW_CONSTRAINT_MIN 1020
       #define TRI_YAW_CONSTRAINT_MAX 2000
-      #define TRI_YAW_MIDDLE 1500 // tail servo center pos. - use this for initial trim; later trim midpoint via LCD
+      #define TRI_YAW_MIDDLE 1600 // tail servo center pos. - use this for initial trim; later trim midpoint via LCD
 
    /********************************    ARM/DISARM    *********************************/
    /* optionally disable stick combinations to arm/disarm the motors.

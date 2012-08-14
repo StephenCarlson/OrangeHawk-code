@@ -1298,6 +1298,8 @@ void mixTable() {
 	// #endif
     if (!f.ARMED)
       motor[i] = MINCOMMAND;
+	if(rcData[THROTTLE] < MINCHECK) servo[5] = conf.tri_yaw_middle;
+
   }
   /****************                      Powermeter Log                    ******************/
   #if (LOG_VALUES == 2) || defined(POWERMETER_SOFT)
