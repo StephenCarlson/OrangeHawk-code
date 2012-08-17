@@ -785,6 +785,7 @@ void loop () {
     #endif
 
 	#if defined(TRICOPTER_HYBRID_TYPE_A)
+		/*
 		if(rcOptions[BOXHYBRID_FF] == 1){ // Forward Flight
 			hybridTiltFactor = (hybridTiltFactor>HYBRID_TILT_INCVAL)? hybridTiltFactor-HYBRID_TILT_INCVAL: 0;
 			//tiltServoSetpoint = HYBRID_TILT_FWDFLT;
@@ -798,6 +799,8 @@ void loop () {
 				// foldMechSetpoint = (f.ARMED==1)? HYBRID_FOLD_HOVER : (HYBRID_FOLD_STOW+10);
 			// #endif
 		}
+		*/
+		hybridTiltFactor = (rcData[AUX1]> 1960)? 0 : ((rcData[AUX1]-1100)<0)? 120: (120-((rcData[AUX1]-1100)>>3)); // (rcData[AUX1]-1000)>>3; // and 120
 		
 		servo[2] = 1000 + ((HYBRID_TILT_HOVER-1000)*(hybridTiltFactor>>2))/(HYBRID_TF_MAX>>2) + ((HYBRID_TILT_FWDFLT-1000)*((HYBRID_TF_MAX-hybridTiltFactor)>>2))/(HYBRID_TF_MAX>>2);
 		debug[0] = servo[2];
