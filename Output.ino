@@ -907,20 +907,27 @@ void mixTable() {
 	
 	
 	//motor[0] = PIDMIX( 0,+4/3, 0);		//REAR
-	motor[0] = axisPID[PITCH]*4/3;
+	motor[0] = axisPID[PITCH]*4/3; // Note that this motor does not have the rcCommand[THROTTLE] added until the very end.
 	motor[1] = PIDMIX(-1,-2/3, 0); 		//RIGHT
 	motor[2] = PIDMIX(+1,-2/3, 0);		//LEFT
 	servo[5] = constrain(conf.tri_yaw_middle + YAW_DIRECTION * axisPID[YAW], TRI_YAW_CONSTRAINT_MIN, TRI_YAW_CONSTRAINT_MAX); //REAR
 	
 	if(hybridTiltFactor<HYBRID_TF_MAX){
-		motor[0] = (motor[0]>2000)? 2000: motor[0];
-		motor[1] = (motor[1]>2000)? 2000: motor[1];
-		motor[2] = (motor[2]>2000)? 2000: motor[2]; // Assume MINTHROTTLE always >1000. 1092 actual ceiling before math breaks. (At HYBRID_TF_MAX>>2 = 30)
+		for(uint8_t i=0; i<3; i++){
+			motor[i] = (motor[i]>2000)? 2000: motor[i];
+			motor[i] = (hybridTiltFactor>(HYBRID_TF_MAX*3/4))? motor[i]:((motor[i]-MINTHROTTLE)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2))*4/3+MINTHROTTLE;
+		}	
 		
-		motor[0] = motor[0]*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2);
-		motor[1] = (hybridTiltFactor>(HYBRID_TF_MAX*3/4))? motor[1]:((motor[1]-MINTHROTTLE)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2))*4/3+MINTHROTTLE;
-		motor[2] = (hybridTiltFactor>(HYBRID_TF_MAX*3/4))? motor[2]:((motor[2]-MINTHROTTLE)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2))*4/3+MINTHROTTLE;
 		servo[5] = (servo[5]-conf.tri_yaw_middle)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2)+conf.tri_yaw_middle;
+		
+		// motor[0] = (motor[0]>2000)? 2000: motor[0];
+		// motor[1] = (motor[1]>2000)? 2000: motor[1];
+		// motor[2] = (motor[2]>2000)? 2000: motor[2]; // Assume MINTHROTTLE always >1000. 1092 actual ceiling before math breaks. (At HYBRID_TF_MAX>>2 = 30)
+		
+		// motor[0] = motor[0]*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2);
+		// motor[1] = (hybridTiltFactor>(HYBRID_TF_MAX*3/4))? motor[1]:((motor[1]-MINTHROTTLE)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2))*4/3+MINTHROTTLE;
+		// motor[2] = (hybridTiltFactor>(HYBRID_TF_MAX*3/4))? motor[2]:((motor[2]-MINTHROTTLE)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2))*4/3+MINTHROTTLE;
+		// servo[5] = (servo[5]-conf.tri_yaw_middle)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2)+conf.tri_yaw_middle;
 		
 		// Old Linear Methods for front thrust values
 		// motor[1] = (motor[1]-MINTHROTTLE)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2)+MINTHROTTLE;

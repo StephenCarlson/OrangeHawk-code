@@ -1,0 +1,58 @@
+
+
+
+Activate Line
+000		No Forward Flight
+001		Hover to Full Forward
+011		Middle Stage Enabled
+100		Hover to Full Forward
+110		Middle Stage Enabled
+111		Forward Flight Forced On
+010		Proportional Mode Forward
+101		Proportional Mode Reverse
+
+
+Entire function bypassed if activate byte is not greater than zero, or logical AND = 0.
+Next, check for 111, which forces F/F on.
+Otherwise, first bit is term direction
+second bit activates middle stage if b2 and b0 
+
+if(conf.activate[HYBRID]>0){
+	if(conf.activate[HYBRID] & 0b0101){
+		Constant On
+	} else{
+		
+	}
+	else{ // conf.activate[HYBRID]==0b0111 or above
+}
+
+
+	00	01	11	10
+0	--	F+	F2+	P+	--
+1	F-	P-	F!	F2-	F-
+	--	F+	F2+	P+	
+
+K-Map (Now Obsolete with assignment to 101 and 010)
+	00	01	11	10
+0	N	F+	F2+	N
+1	F-	N	F!	F2-
+
+	00	01	11	10
+0	N	F	F	N
+1	F	N	F	F
+
+	00	01	11	10
+0	N	+	+	
+1	-	N		-
+
+
+
+
+
+
+
+
+
+
+
+
