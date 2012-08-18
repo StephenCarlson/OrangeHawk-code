@@ -887,18 +887,20 @@ void mixTable() {
     motor[2] = PIDMIX(+0,+1, -1); //REAR_L
     motor[3] = PIDMIX(+1, -1, -0); //FRONT_L
   #endif
+
   #ifdef TRICOPTER_HYBRID_TYPE_A
 		//int16_t tiltServoSetpoint = 0; Made Global for 50Hz loop
 	#if defined(TRI_HYBRID_FOLD_MECH)
 		int16_t foldMechSetpoint = 0; // uint16_t is a type mis-match on compare with analogRead()
 	#endif
 	#if defined(TRI_HYBRID_WING_SERVOS) // Wings: 1 and 2, Tilt is 3, Fold is 4
-		// servo[0]  = (PITCH_DIRECTION_L * (rcData[PITCH]-MIDRC) + ROLL_DIRECTION_L * (rcData[ROLL]-MIDRC))/2;
-		// servo[1]  = (PITCH_DIRECTION_R * (rcData[PITCH]-MIDRC) + ROLL_DIRECTION_R * (rcData[ROLL]-MIDRC))/2;
-		
-		servo[0]  = PITCH_DIRECTION_L * axisPID[PITCH]        + ROLL_DIRECTION_L * axisPID[ROLL];
-		servo[1]  = PITCH_DIRECTION_R * axisPID[PITCH]        + ROLL_DIRECTION_R * axisPID[ROLL];
-
+		if (f.PASSTHRU_MODE) {
+			servo[0]  = (PITCH_DIRECTION_L * (rcData[PITCH]-MIDRC) + ROLL_DIRECTION_L * (rcData[ROLL]-MIDRC))/2;
+			servo[1]  = (PITCH_DIRECTION_R * (rcData[PITCH]-MIDRC) + ROLL_DIRECTION_R * (rcData[ROLL]-MIDRC))/2;
+		} else{
+			servo[0]  = PITCH_DIRECTION_L * axisPID[PITCH] + ROLL_DIRECTION_L * axisPID[ROLL];
+			servo[1]  = PITCH_DIRECTION_R * axisPID[PITCH] + ROLL_DIRECTION_R * axisPID[ROLL];
+		}
 		servo[0]  = constrain(servo[0] + conf.wing_left_mid,  WING_LEFT_MIN,  WING_LEFT_MAX );
 		servo[1]  = constrain(servo[1] + conf.wing_right_mid, WING_RIGHT_MIN, WING_RIGHT_MAX);
 	#endif
@@ -992,7 +994,6 @@ void mixTable() {
 	//Or just use RC Aux input as proportional term
   #endif
 
-  
   /****************                Cam stabilize Sevos             ******************/
   #if defined(SERVO_TILT)
     #if defined(A0_A1_PIN_HEX) && (NUMBER_MOTOR == 6) && defined(PROMINI)
@@ -1287,7 +1288,7 @@ void mixTable() {
   maxMotor=motor[0];
   for(i=1;i< NUMBER_MOTOR;i++)
     if (motor[i]>maxMotor) maxMotor=motor[i];
-  for (i = 0; i < NUMBER_MOTOR; i++){
+  for (i = 0; i < NUMBER_MOTOR; i++) {
     if (maxMotor > MAXTHROTTLE) // this is a way to still have good gyro corrections if at least one motor reaches its max.
       motor[i] -= maxMotor - MAXTHROTTLE;
     motor[i] = constrain(motor[i], MINTHROTTLE, MAXTHROTTLE);    

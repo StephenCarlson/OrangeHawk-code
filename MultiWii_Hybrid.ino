@@ -784,6 +784,12 @@ void loop () {
       }
     #endif
 
+    uint16_t auxState = 0;
+    for(i=0;i<4;i++)
+      auxState |= (rcData[AUX1+i]<1300)<<(3*i) | (1300<rcData[AUX1+i] && rcData[AUX1+i]<1700)<<(3*i+1) | (rcData[AUX1+i]>1700)<<(3*i+2);
+    for(i=0;i<CHECKBOXITEMS;i++)
+      rcOptions[i] = (auxState & conf.activate[i])>0;
+
 	#if defined(TRICOPTER_HYBRID_TYPE_A)
 		/*
 		if(rcOptions[BOXHYBRID_FF] == 1){ // Forward Flight
@@ -812,12 +818,6 @@ void loop () {
 			// servo[2]-HYBRID_TILT_INCVAL;
 	#endif
 	
-    uint16_t auxState = 0;
-    for(i=0;i<4;i++)
-      auxState |= (rcData[AUX1+i]<1300)<<(3*i) | (1300<rcData[AUX1+i] && rcData[AUX1+i]<1700)<<(3*i+1) | (rcData[AUX1+i]>1700)<<(3*i+2);
-    for(i=0;i<CHECKBOXITEMS;i++)
-      rcOptions[i] = (auxState & conf.activate[i])>0;
-
     // note: if FAILSAFE is disable, failsafeCnt > 5*FAILSAVE_DELAY is always false
     if (( rcOptions[BOXACC] || (failsafeCnt > 5*FAILSAVE_DELAY) ) && ACC ) { 
       // bumpless transfer to Level mode
