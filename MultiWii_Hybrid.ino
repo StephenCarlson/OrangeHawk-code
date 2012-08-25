@@ -52,7 +52,7 @@ July  2012     V2.1
 #define BOXHYBD_INT  15 // Tricopter Flying-Wing Hybrid Intermediate Mode (50/50 hover to forward)
 
 #define PIDITEMS 10
-#define CHECKBOXITEMS 15
+#define CHECKBOXITEMS 16
 
 const char boxnames[] PROGMEM = // names for dynamic generation of config GUI
   "ACC;"
