@@ -70,6 +70,7 @@ const char boxnames[] PROGMEM = // names for dynamic generation of config GUI
   "LLIGHTS;"
   "HEADADJ;"
   "HYBRID_FF;"
+  "HYBRID_50;"
 ;
 
 const char pidnames[] PROGMEM =
