@@ -228,7 +228,8 @@ void evaluateCommand() {
 					rcOptions[BOXLEDMAX]<<BOXLEDMAX|
 					rcOptions[BOXLLIGHTS]<<BOXLLIGHTS|
 					rcOptions[BOXHEADADJ]<<BOXHEADADJ|
-					rcOptions[BOXHYBRID_FF]<<BOXHYBRID_FF);
+					rcOptions[BOXHYBD_FF]<<BOXHYBD_FF|
+					rcOptions[BOXHYBD_INT]<<BOXHYBD_INT);
      break;
    case MSP_RAW_IMU:
      headSerialReply(18);

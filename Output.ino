@@ -963,7 +963,7 @@ void mixTable() {
 	// After uploading int32_t version to hybrid, behavior..... good! Still doing 30 anyway.
 	
 	/*
-	if(rcOptions[BOXHYBRID_FF] == 1){ // Forward Flight
+	if(rcOptions[BOXHYBD_FF] == 1){ // Forward Flight
 		motor[0] = rcCommand[THROTTLE];		//REAR 		rcCommand[THROTTLE]
 		motor[1] = (motor[1]>MINCOMMAND)? motor[1]-((HYBRID_TILT_INCVAL>>2)+1): MINCOMMAND;				//RIGHT		0
 		motor[2] = (motor[2]>MINCOMMAND)? motor[2]-((HYBRID_TILT_INCVAL>>2)+1): MINCOMMAND;				//LEFT		0
@@ -992,8 +992,8 @@ void mixTable() {
 	
 	
 	
-	// Better Idea: rcOptions[BOXHYBRID_FF] Enables a proportional term, [0:255]
-	// Inc or Dec to 0 or 255 if BOXHYBRID_FF is on or off. Term is used to phase the
+	// Better Idea: rcOptions[BOXHYBD_FF] Enables a proportional term, [0:255]
+	// Inc or Dec to 0 or 255 if BOXHYBD_FF is on or off. Term is used to phase the
 	// motors and servos gently between the two modes, using the incrementer. What is loop speed?
 	// May need to move some of the fluff to a slower loop. Put the incrementer in the 50 Hz loop, 
 	// max transition is 2.55 sec.

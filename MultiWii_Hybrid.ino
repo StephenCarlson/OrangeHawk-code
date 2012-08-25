@@ -48,7 +48,8 @@ July  2012     V2.1
 #define BOXLEDMAX    11 // we want maximum illumination
 #define BOXLLIGHTS   12 // enable landing lights at any altitude
 #define BOXHEADADJ   13 // acquire heading for HEADFREE mode
-#define BOXHYBRID_FF 14 // Tricopter Flying-Wing Hybrid Activation for Forward Flight
+#define BOXHYBD_FF   14 // Tricopter Flying-Wing Hybrid Activation for Forward Flight
+#define BOXHYBD_INT  15 // Tricopter Flying-Wing Hybrid Intermediate Mode (50/50 hover to forward)
 
 #define PIDITEMS 10
 #define CHECKBOXITEMS 15
@@ -791,23 +792,26 @@ void loop () {
       rcOptions[i] = (auxState & conf.activate[i])>0;
 
 	#if defined(TRICOPTER_HYBRID_TYPE_A)
-		/*
-		if(rcOptions[BOXHYBRID_FF] == 1){ // Forward Flight
+		
+		if(rcOptions[BOXHYBD_FF] == 1 && rcOptions[BOXHYBD_INT] == 0){ // Forward Flight
 			hybridTiltFactor = (hybridTiltFactor>HYBRID_TILT_INCVAL)? hybridTiltFactor-HYBRID_TILT_INCVAL: 0;
 			//tiltServoSetpoint = HYBRID_TILT_FWDFLT;
 			// #if defined(TRI_HYBRID_FOLD_MECH)
 				// foldMechSetpoint = (f.ARMED==1)? (HYBRID_FOLD_FWDFLT-10) : (HYBRID_FOLD_STOW+10);
 			// #endif
-		} else{ // Hover Mode
+		} else if(rcOptions[BOXHYBD_FF] == 0 && rcOptions[BOXHYBD_INT] == 0){ // Hover Mode
 			hybridTiltFactor = ((hybridTiltFactor+HYBRID_TILT_INCVAL)<HYBRID_TF_MAX)? hybridTiltFactor+HYBRID_TILT_INCVAL : HYBRID_TF_MAX;
 			//tiltServoSetpoint = HYBRID_TILT_HOVER;
 			// #if defined(TRI_HYBRID_FOLD_MECH)
 				// foldMechSetpoint = (f.ARMED==1)? HYBRID_FOLD_HOVER : (HYBRID_FOLD_STOW+10);
 			// #endif
+		} else if(rcOptions[BOXHYBD_FF] == 0 && rcOptions[BOXHYBD_INT] == 1){ // 50/50 Mix, or middle spot between F/F and Hover
+			hybridTiltFactor = ((hybridTiltFactor+HYBRID_TILT_INCVAL)<(HYBRID_TF_MAX/2))? hybridTiltFactor+HYBRID_TILT_INCVAL : 
+							   ((hybridTiltFactor-HYBRID_TILT_INCVAL)>(HYBRID_TF_MAX/2))? hybridTiltFactor-HYBRID_TILT_INCVAL : (HYBRID_TF_MAX/2);
+		} else{ // R/C Knob Channel Mix, direct assignment, no incrementers. For debugging/manual flying. For the stick-shift type of crowd.
+			hybridTiltFactor = (rcData[AUX1]> 1960)? 0 : ((rcData[AUX1]-1100)<0)? 120: (120-((rcData[AUX1]-1100)>>3)); // (rcData[AUX1]-1000)>>3; // and 120
 		}
-		*/
-		hybridTiltFactor = (rcData[AUX1]> 1960)? 0 : ((rcData[AUX1]-1100)<0)? 120: (120-((rcData[AUX1]-1100)>>3)); // (rcData[AUX1]-1000)>>3; // and 120
-		
+				
 		servo[2] = 1000 + ((HYBRID_TILT_HOVER-1000)*(hybridTiltFactor>>2))/(HYBRID_TF_MAX>>2) + ((HYBRID_TILT_FWDFLT-1000)*((HYBRID_TF_MAX-hybridTiltFactor)>>2))/(HYBRID_TF_MAX>>2);
 		debug[0] = servo[2];
 		// debug[1] is the atomicServo[2] value

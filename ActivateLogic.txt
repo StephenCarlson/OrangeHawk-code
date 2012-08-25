@@ -1,3 +1,13 @@
+New Idea: Have a Hybrid Intermediate select line
+
+	_FF	_INT	Behavior
+	0	0		Hover
+	0	1		50%
+	1	0		Forward Flight (100%)
+	1	1		Proportional Knob Enabled
+
+
+
 
 
 
