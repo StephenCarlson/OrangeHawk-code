@@ -918,8 +918,8 @@ void mixTable() {
 			motor[i] = (hybridTiltFactor>(HYBRID_TF_MAX*3/4))? motor[i]:((motor[i]-MINTHROTTLE)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2))*4/3+MINTHROTTLE;
 		}	
 		
-		servo[5] = (servo[5]-conf.tri_yaw_middle)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2)+conf.tri_yaw_middle;
-		
+		//servo[5] = (servo[5]-conf.tri_yaw_middle)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2)+conf.tri_yaw_middle;
+		servo[5] = (hybridTiltFactor>(HYBRID_TF_MAX/4))? servo[5]: conf.tri_yaw_middle;
 		// motor[0] = (motor[0]>2000)? 2000: motor[0];
 		// motor[1] = (motor[1]>2000)? 2000: motor[1];
 		// motor[2] = (motor[2]>2000)? 2000: motor[2]; // Assume MINTHROTTLE always >1000. 1092 actual ceiling before math breaks. (At HYBRID_TF_MAX>>2 = 30)
