@@ -210,7 +210,10 @@ static int16_t motor[NUMBER_MOTOR];
   static int16_t servo[8] = {1500,1500,1500,1500,1500,1500,1500,1500};
 #endif
 #if defined(TRICOPTER_HYBRID_TYPE_A)
-	static int16_t hybridTiltFactor = 0; // [0:100] for [Hover:Forward Flight], is a subtract term
+	static int16_t hybridTiltFactor = 0; // [0:100] for [Forward Flight:Hover], Hover at HYBRID_TF_MAX
+#endif
+#if defined(TRI_HYBRID_FOLD_MECH)
+	static int16_t foldMechSetpoint = 0; // uint16_t is a type mis-match on compare with analogRead()
 #endif
 
 // ************************
@@ -796,19 +799,28 @@ void loop () {
 		if(rcOptions[BOXHYBD_FF] == 1 && rcOptions[BOXHYBD_INT] == 0){ // Forward Flight
 			hybridTiltFactor = (hybridTiltFactor>HYBRID_TILT_INCVAL)? hybridTiltFactor-HYBRID_TILT_INCVAL: 0;
 			#if defined(TRI_HYBRID_FOLD_MECH)
-				foldMechSetpoint = (f.ARMED==1)? (HYBRID_FOLD_FWDFLT-10) : (HYBRID_FOLD_STOW+10);
+				foldMechSetpoint = (hybridTiltFactor==0)? HYBRID_FOLD_FWDFLT: HYBRID_FOLD_HOVER;
 			#endif
 		} else if(rcOptions[BOXHYBD_FF] == 0 && rcOptions[BOXHYBD_INT] == 0){ // Hover Mode
 			hybridTiltFactor = ((hybridTiltFactor+HYBRID_TILT_INCVAL)<HYBRID_TF_MAX)? hybridTiltFactor+HYBRID_TILT_INCVAL : HYBRID_TF_MAX;
 			#if defined(TRI_HYBRID_FOLD_MECH)
-				foldMechSetpoint = (f.ARMED==1)? HYBRID_FOLD_HOVER : (HYBRID_FOLD_STOW+10);
+				foldMechSetpoint = HYBRID_FOLD_HOVER;
 			#endif
 		} else if(rcOptions[BOXHYBD_FF] == 0 && rcOptions[BOXHYBD_INT] == 1){ // 50/50 Mix, or middle spot between F/F and Hover
 			hybridTiltFactor = ((hybridTiltFactor+HYBRID_TILT_INCVAL)<(HYBRID_TF_MAX/2))? hybridTiltFactor+HYBRID_TILT_INCVAL : 
 							   ((hybridTiltFactor-HYBRID_TILT_INCVAL)>(HYBRID_TF_MAX/2))? hybridTiltFactor-HYBRID_TILT_INCVAL : (HYBRID_TF_MAX/2);
+			#if defined(TRI_HYBRID_FOLD_MECH)
+				foldMechSetpoint = HYBRID_FOLD_HOVER
+			#endif
 		} else{ // R/C Knob Channel Mix, direct assignment, no incrementers. For debugging/manual flying. For the manual-transmission type of crowd.
 			hybridTiltFactor = (rcData[AUX1]> 1960)? 0 : ((rcData[AUX1]-1100)<0)? 120: (120-((rcData[AUX1]-1100)>>3)); // (rcData[AUX1]-1000)>>3; // and 120
+			#if defined(TRI_HYBRID_FOLD_MECH)
+				foldMechSetpoint = (hybridTiltFactor==0)? HYBRID_FOLD_FWDFLT: HYBRID_FOLD_HOVER;
+			#endif
 		}
+		#if defined(TRI_HYBRID_FOLD_MECH)
+			foldMechSetpoint = (f.ARMED==1)? foldMechSetpoint : HYBRID_FOLD_STOW;
+		#endif
 				
 		servo[2] = 1000 + ((HYBRID_TILT_HOVER-1000)*(hybridTiltFactor>>2))/(HYBRID_TF_MAX>>2) + ((HYBRID_TILT_FWDFLT-1000)*((HYBRID_TF_MAX-hybridTiltFactor)>>2))/(HYBRID_TF_MAX>>2);
 		//debug[0] = motor[0];

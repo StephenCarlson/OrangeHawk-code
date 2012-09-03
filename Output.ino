@@ -889,9 +889,6 @@ void mixTable() {
   #endif
 
   #ifdef TRICOPTER_HYBRID_TYPE_A
-	#if defined(TRI_HYBRID_FOLD_MECH)
-		int16_t foldMechSetpoint = 0; // uint16_t is a type mis-match on compare with analogRead()
-	#endif
 	#if defined(TRI_HYBRID_WING_SERVOS) // Wings: 1 and 2, Tilt is 3, Fold is 4
 		if (f.PASSTHRU_MODE) {
 			servo[0]  = (PITCH_DIRECTION_L * (rcData[PITCH]-MIDRC) + ROLL_DIRECTION_L * (rcData[ROLL]-MIDRC))/2;
@@ -914,8 +911,10 @@ void mixTable() {
 		motor[0] = (motor[0]>2000)? 2000: motor[0];
 		motor[0] = (hybridTiltFactor>(HYBRID_TF_MAX*3/4))? motor[0]:((motor[0])*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2))*4/3;
 		for(uint8_t i=1; i<3; i++){
+			// if(analogRead(FOLD_MECH_POT_CH)>PROP_STRIKE_HAZARD_VALUE) motor[i] = MINCOMMAND; else...
 			motor[i] = (motor[i]>2000)? 2000: motor[i];
 			motor[i] = (hybridTiltFactor>(HYBRID_TF_MAX*3/4))? motor[i]:((motor[i]-MINTHROTTLE)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2))*4/3+MINTHROTTLE;
+			// May be wiser to place if statement here, code optimized for main case,
 		}	
 		
 		//servo[5] = (servo[5]-conf.tri_yaw_middle)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2)+conf.tri_yaw_middle;
@@ -1225,7 +1224,7 @@ void mixTable() {
   for (i = 0; i < NUMBER_MOTOR; i++) {
     if (maxMotor > MAXTHROTTLE) // this is a way to still have good gyro corrections if at least one motor reaches its max.
       motor[i] -= maxMotor - MAXTHROTTLE;
-    motor[i] = constrain(motor[i], MINTHROTTLE, MAXTHROTTLE);    
+    motor[i] = constrain(motor[i], MINTHROTTLE, MAXTHROTTLE);    // Fold Mech prop strike code upset by this
     if ((rcData[THROTTLE]) < MINCHECK)
       #ifndef MOTOR_STOP
         motor[i] = MINTHROTTLE;
@@ -1235,6 +1234,7 @@ void mixTable() {
 	// #if defined(TRICOPTER_HYBRID_TYPE_A)
 		// if(hybridTiltFactor==0 && (i==1 || i==2)) motor[i] = MINCOMMAND;
 	// #endif
+	// Also, add here a term to kill front two motors if folded into nose or stowed against wings.
     if (!f.ARMED)
       motor[i] = MINCOMMAND;
 	if(rcData[THROTTLE] < MINCHECK) servo[5] = conf.tri_yaw_middle;
