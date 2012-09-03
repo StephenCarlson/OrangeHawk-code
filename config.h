@@ -72,13 +72,18 @@
 	//#define DEMIX_PITCH_ROLL
 	// If a wing folding mechansim is present (meaning a 360-modified servo and an analog stop switch input), uncomment this:
 	//#define TRI_HYBRID_FOLD_MECH
+	#if defined(TRI_HYBRID_FOLD_MECH) // Really, just to remind user to avoid A3 for anything, used for wing position sensing.
+		#define HYBRID_FOLD_ANALOG_CH	A3
+		#undef VBAT
+	#endif
 	
 	#define HYBRID_TILT_HOVER	1005	// Servo PWM values
 	#define HYBRID_TILT_FWDFLT	2000
 	#define HYBRID_TILT_INCVAL	3
 	#define HYBRID_FOLD_FWDFLT	1000	// ADC values to chase
-	#define HYBRID_FOLD_HOVER	480		
-	#define HYBRID_FOLD_STOW	80
+	#define HYBRID_FOLD_HAZARD	720		// Disable motors at this position as props start to cross arcs
+	#define HYBRID_FOLD_HOVER	480		// Remember analogRead(HYBRID_FOLD_ANALOG_CH)<(foldMechSetpoint-10),
+	#define HYBRID_FOLD_STOW	80		// don't get too close to 0 or 1024
 	#define HYBRID_TF_MAX		120 // >>2 becomes 30, which, for (2000-1000)*30, is less than 32767 (16-bit signed max possible)
 
   /****************************    Motor minthrottle    *******************************/

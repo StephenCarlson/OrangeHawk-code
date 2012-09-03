@@ -911,10 +911,11 @@ void mixTable() {
 		motor[0] = (motor[0]>2000)? 2000: motor[0];
 		motor[0] = (hybridTiltFactor>(HYBRID_TF_MAX*3/4))? motor[0]:((motor[0])*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2))*4/3;
 		for(uint8_t i=1; i<3; i++){
-			// if(analogRead(FOLD_MECH_POT_CH)>PROP_STRIKE_HAZARD_VALUE) motor[i] = MINCOMMAND; else...
 			motor[i] = (motor[i]>2000)? 2000: motor[i];
 			motor[i] = (hybridTiltFactor>(HYBRID_TF_MAX*3/4))? motor[i]:((motor[i]-MINTHROTTLE)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2))*4/3+MINTHROTTLE;
-			// May be wiser to place if statement here, code optimized for main case,
+			#if defined(TRI_HYBRID_FOLD_MECH)
+				if(analogRead(HYBRID_FOLD_ANALOG_CH)>HYBRID_FOLD_HAZARD) motor[i] = MINCOMMAND; // Note: Goes to MINTHROTTLE in motor filtering 200 lines down.
+			#endif
 		}	
 		
 		//servo[5] = (servo[5]-conf.tri_yaw_middle)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2)+conf.tri_yaw_middle;
@@ -923,7 +924,8 @@ void mixTable() {
 	debug[0] = motor[0];
 	motor[0] += rcCommand[THROTTLE];
 	#if defined(TRI_HYBRID_FOLD_MECH)
-		servo[3] = (504<foldMechSetpoint)? 2000 : 1000; // *WORK NEEDED*
+		servo[3] =	(analogRead(HYBRID_FOLD_ANALOG_CH)<(foldMechSetpoint-10))? 2000: 
+					(analogRead(HYBRID_FOLD_ANALOG_CH)>(foldMechSetpoint+10))? 1000: 1500;
 	#endif
   #endif
 
