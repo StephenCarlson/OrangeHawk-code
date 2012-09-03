@@ -57,7 +57,7 @@
 	#define TRICOPTER_HYBRID_TYPE_A 
 	//#define TRICOPTER_HYBRID_TYPE_B 
 	// Type A is the Axial Tail: A regular Tricopter with the yaw motor also rotating back for forward flight.
-	// Type B is the Bicopter Configuration: Front two rotate down, rear motor fixed. Google "IAI Panther".
+	// Type B is the Bicopter Configuration: Front two rotate down, rear motor fixed pointing up. Google "IAI Panther".
 	// Type C is Combine, as in all three motors rotate forward.
 	// Note: Need to insert subclasses, like A1 or B2, A1 as in 1 motor tilts, yaw is axial. B1 means ...
 	// Yaw Orgin		Motor Tilt Pattern				Servo Req. Matrix (not inc. fold sys.)
@@ -70,7 +70,7 @@
 	// In which case, we may want to mix for the flying wing on the radio, and de-mix inside MultiWii
 	// De-mixing the R/C Rx inputs should work the same, regardless of if we use regular or the PPM Sum method in MultiWii
 	//#define DEMIX_PITCH_ROLL
-	// If a wing folding mechansim is present (meaning no 360-modified servo and a analog stop switch input), uncomment this:
+	// If a wing folding mechansim is present (meaning a 360-modified servo and an analog stop switch input), uncomment this:
 	//#define TRI_HYBRID_FOLD_MECH
 	
 	#define HYBRID_TILT_HOVER	1005	// Servo PWM values

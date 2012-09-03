@@ -889,7 +889,6 @@ void mixTable() {
   #endif
 
   #ifdef TRICOPTER_HYBRID_TYPE_A
-		//int16_t tiltServoSetpoint = 0; Made Global for 50Hz loop
 	#if defined(TRI_HYBRID_FOLD_MECH)
 		int16_t foldMechSetpoint = 0; // uint16_t is a type mis-match on compare with analogRead()
 	#endif
@@ -904,7 +903,6 @@ void mixTable() {
 		servo[0]  = constrain(servo[0] + conf.wing_left_mid,  WING_LEFT_MIN,  WING_LEFT_MAX );
 		servo[1]  = constrain(servo[1] + conf.wing_right_mid, WING_RIGHT_MIN, WING_RIGHT_MAX);
 	#endif
-	
 	
 	//motor[0] = PIDMIX( 0,+4/3, 0);		//REAR
 	motor[0] = axisPID[PITCH]*4/3; // Note that this motor does not have the rcCommand[THROTTLE] added until the very end.
@@ -922,86 +920,12 @@ void mixTable() {
 		
 		//servo[5] = (servo[5]-conf.tri_yaw_middle)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2)+conf.tri_yaw_middle;
 		servo[5] = (hybridTiltFactor>(HYBRID_TF_MAX/4))? servo[5]: conf.tri_yaw_middle;
-		// motor[0] = (motor[0]>2000)? 2000: motor[0];
-		// motor[1] = (motor[1]>2000)? 2000: motor[1];
-		// motor[2] = (motor[2]>2000)? 2000: motor[2]; // Assume MINTHROTTLE always >1000. 1092 actual ceiling before math breaks. (At HYBRID_TF_MAX>>2 = 30)
-		
-		// motor[0] = motor[0]*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2);
-		// motor[1] = (hybridTiltFactor>(HYBRID_TF_MAX*3/4))? motor[1]:((motor[1]-MINTHROTTLE)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2))*4/3+MINTHROTTLE;
-		// motor[2] = (hybridTiltFactor>(HYBRID_TF_MAX*3/4))? motor[2]:((motor[2]-MINTHROTTLE)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2))*4/3+MINTHROTTLE;
-		// servo[5] = (servo[5]-conf.tri_yaw_middle)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2)+conf.tri_yaw_middle;
-		
-		// Old Linear Methods for front thrust values
-		// motor[1] = (motor[1]-MINTHROTTLE)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2)+MINTHROTTLE;
-		// motor[2] = (motor[2]-MINTHROTTLE)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2)+MINTHROTTLE;
 	}
 	debug[0] = motor[0];
 	motor[0] += rcCommand[THROTTLE];
-	// 10 Aug 2012
-	// Next Step: try to fill as much as the cos curve as possible.
-	// Wolfram Alpha Visualization: plot cos(x*pi/2) and y=1-x from 0 to 1
-	// Further: plot cos(x*pi/2) and y=1-x and (cos(x*pi/2)-(1-x)) from 0 to 1
-	// Find max value: max value of cos(x*pi/2)-(1-x) on interval 0 to 1
-	// Gives 2*arcsin(2/pi)/pi, or .439
-	// Well, .5 isn't a bad spot to center the kink in the approximation function I'll make...
-	// cos(.5) = .8776, and y=1-x is .5, so we need to make a piecewise funciton .3776 above 1-x
-	// The equations are y=1-.6x for 0 to .5 and -1.4(x-1) for .5 to 1, intersection at .7 (cos pi/4)
-	// Add 40% of x for x[0:.5*TiltAngleVar] and 140% x - 40% of x for x[.5:end]
-	// Lets do cos(pi/8), or 22.5 deg, .25 tilt sweep, for second and final point:
-	
-	// Journal: Miracle w/ Ryler, attempt to move out, late night coding.
-	// 
-	
-	
-	
-	// motor[0] = rcCommand[THROTTLE] + ((int32_t)hybridTiltFactor*axisPID[PITCH]*4/3)/HYBRID_TF_MAX;	//REAR , Expect this code to crash the processor?
-	// motor[1] = ((int32_t)(PIDMIX(-1,-2/3, 0))*hybridTiltFactor)/HYBRID_TF_MAX + ((int32_t)(MINCOMMAND)*(HYBRID_TF_MAX-hybridTiltFactor))/HYBRID_TF_MAX;		//RIGHT
-	// motor[2] = ((int32_t)(PIDMIX(+1,-2/3, 0))*hybridTiltFactor)/HYBRID_TF_MAX + ((int32_t)(MINCOMMAND)*(HYBRID_TF_MAX-hybridTiltFactor))/HYBRID_TF_MAX;		//LEFT
-	// servo[5] = constrain(conf.tri_yaw_middle + ((int32_t)(hybridTiltFactor)*(YAW_DIRECTION * axisPID[YAW]))/HYBRID_TF_MAX, TRI_YAW_CONSTRAINT_MIN, TRI_YAW_CONSTRAINT_MAX);
-	// Actually, I know this is going to crash/hog the processor. Trick in mind to fix:
-	// 1: The real information is the range between 1000 and 2000; do math for range [0:1000], add offset later
-	// 2: Don't really need 100 steps of resolution. Lets do for 30; 32767/30 ~= 1092, which is good for [0:1000]
-	// Oh, but 30 is not good for incrementing at 50 Hz, want ~1 sec transition, or 50 counts.
-	// Fix: Use larger 50Hz incrementer variable, right shift it to [0:30] range.
-	// After uploading int32_t version to hybrid, behavior..... good! Still doing 30 anyway.
-	
-	/*
-	if(rcOptions[BOXHYBD_FF] == 1){ // Forward Flight
-		motor[0] = rcCommand[THROTTLE];		//REAR 		rcCommand[THROTTLE]
-		motor[1] = (motor[1]>MINCOMMAND)? motor[1]-((HYBRID_TILT_INCVAL>>2)+1): MINCOMMAND;				//RIGHT		0
-		motor[2] = (motor[2]>MINCOMMAND)? motor[2]-((HYBRID_TILT_INCVAL>>2)+1): MINCOMMAND;				//LEFT		0
-		servo[5] = MIDRC;
-		tiltServoSetpoint = HYBRID_TILT_FWDFLT;
-		#if defined(TRI_HYBRID_FOLD_MECH)
-			foldMechSetpoint = (f.ARMED==1)? (HYBRID_FOLD_FWDFLT-10) : (HYBRID_FOLD_STOW+10);
-		#endif
-	}
-	else{ // Hover Mode
-		motor[0] = PIDMIX( 0,+4/3, 0); 		//REAR
-		motor[1] = PIDMIX(-1,-2/3, 0); 		//RIGHT
-		motor[2] = PIDMIX(+1,-2/3, 0);		//LEFT
-		servo[5] = constrain(conf.tri_yaw_middle + YAW_DIRECTION * axisPID[YAW], TRI_YAW_CONSTRAINT_MIN, TRI_YAW_CONSTRAINT_MAX); //REAR
-		tiltServoSetpoint = HYBRID_TILT_HOVER;
-		#if defined(TRI_HYBRID_FOLD_MECH)
-			foldMechSetpoint = (f.ARMED==1)? HYBRID_FOLD_HOVER : (HYBRID_FOLD_STOW+10);
-		#endif
-	}
-	*/
-	
-	//servo[2] = (servo[2]<tiltServoSetpoint)? servo[2]+HYBRID_TILT_INCVAL : servo[2]-HYBRID_TILT_INCVAL; // Put into 50Hz loop
 	#if defined(TRI_HYBRID_FOLD_MECH)
 		servo[3] = (504<foldMechSetpoint)? 2000 : 1000; // *WORK NEEDED*
 	#endif
-	
-	
-	
-	// Better Idea: rcOptions[BOXHYBD_FF] Enables a proportional term, [0:255]
-	// Inc or Dec to 0 or 255 if BOXHYBD_FF is on or off. Term is used to phase the
-	// motors and servos gently between the two modes, using the incrementer. What is loop speed?
-	// May need to move some of the fluff to a slower loop. Put the incrementer in the 50 Hz loop, 
-	// max transition is 2.55 sec.
-	
-	//Or just use RC Aux input as proportional term
   #endif
 
   /****************                Cam stabilize Sevos             ******************/
