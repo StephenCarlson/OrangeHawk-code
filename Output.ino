@@ -913,7 +913,9 @@ void mixTable() {
 	servo[5] = constrain(conf.tri_yaw_middle + YAW_DIRECTION * axisPID[YAW], TRI_YAW_CONSTRAINT_MIN, TRI_YAW_CONSTRAINT_MAX); //REAR
 	
 	if(hybridTiltFactor<HYBRID_TF_MAX){
-		for(uint8_t i=0; i<3; i++){
+		motor[0] = (motor[0]>2000)? 2000: motor[0];
+		motor[0] = (hybridTiltFactor>(HYBRID_TF_MAX*3/4))? motor[0]:((motor[0])*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2))*4/3;
+		for(uint8_t i=1; i<3; i++){
 			motor[i] = (motor[i]>2000)? 2000: motor[i];
 			motor[i] = (hybridTiltFactor>(HYBRID_TF_MAX*3/4))? motor[i]:((motor[i]-MINTHROTTLE)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2))*4/3+MINTHROTTLE;
 		}	
@@ -933,6 +935,7 @@ void mixTable() {
 		// motor[1] = (motor[1]-MINTHROTTLE)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2)+MINTHROTTLE;
 		// motor[2] = (motor[2]-MINTHROTTLE)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2)+MINTHROTTLE;
 	}
+	debug[0] = motor[0];
 	motor[0] += rcCommand[THROTTLE];
 	// 10 Aug 2012
 	// Next Step: try to fill as much as the cos curve as possible.

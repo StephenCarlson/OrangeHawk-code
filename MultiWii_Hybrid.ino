@@ -814,7 +814,7 @@ void loop () {
 		}
 				
 		servo[2] = 1000 + ((HYBRID_TILT_HOVER-1000)*(hybridTiltFactor>>2))/(HYBRID_TF_MAX>>2) + ((HYBRID_TILT_FWDFLT-1000)*((HYBRID_TF_MAX-hybridTiltFactor)>>2))/(HYBRID_TF_MAX>>2);
-		debug[0] = servo[2];
+		//debug[0] = motor[0];
 		// debug[1] is the atomicServo[2] value
 		debug[2] = hybridTiltFactor;
 		debug[3] = (hybridTiltFactor>=HYBRID_TF_MAX)? 1:0;
