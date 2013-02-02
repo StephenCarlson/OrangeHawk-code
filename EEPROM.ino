@@ -84,6 +84,9 @@ void checkFirstTime() {
   #if defined(TRI) || defined(TRICOPTER_HYBRID_TYPE_A)
     conf.tri_yaw_middle = TRI_YAW_MIDDLE;
   #endif
+  #if defined(TRICOPTER_HYBRID_TYPE_B)
+	conf.hybrid_cassette_offset = HYBRID_CASSETTE_OFFSET;
+  #endif
   #if defined HELICOPTER || defined(AIRPLANE)|| defined(SINGLECOPTER)|| defined(DUALCOPTER)
     {
       int16_t s[8] = SERVO_OFFSET;

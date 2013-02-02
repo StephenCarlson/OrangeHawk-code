@@ -1009,6 +1009,8 @@
  #define MULTITYPE 17
 #elif defined(TRICOPTER_HYBRID_TYPE_A)
  #define MULTITYPE 57
+#elif defined(TRICOPTER_HYBRID_TYPE_B)
+ #define MULTITYPE 67
 #endif
 
 /**************************************************************************************/
@@ -1063,7 +1065,7 @@
 /**************************************************************************************/
 /***************             motor and servo numbers               ********************/
 /**************************************************************************************/
-#if defined(BI) || defined(TRI) || defined(SERVO_TILT) || defined(GIMBAL) || defined(FLYING_WING) || defined(AIRPLANE) || defined(CAMTRIG) || defined(HELICOPTER) || defined(SERVO_MIX_TILT)|| defined(SINGLECOPTER)|| defined(DUALCOPTER) || defined(TRICOPTER_HYBRID_TYPE_A)
+#if defined(BI) || defined(TRI) || defined(SERVO_TILT) || defined(GIMBAL) || defined(FLYING_WING) || defined(AIRPLANE) || defined(CAMTRIG) || defined(HELICOPTER) || defined(SERVO_MIX_TILT)|| defined(SINGLECOPTER)|| defined(DUALCOPTER) || defined(TRICOPTER_HYBRID_TYPE_A) || defined(TRICOPTER_HYBRID_TYPE_B)
   #define SERVO
 #endif
 
@@ -1118,7 +1120,7 @@
     #define PRI_SERVO_FROM   4 // use servo from 4 to 7
     #define PRI_SERVO_TO     7
   #endif
-#elif defined(TRICOPTER_HYBRID_TYPE_A)
+#elif defined(TRICOPTER_HYBRID_TYPE_A) || defined(TRICOPTER_HYBRID_TYPE_B)
 	#define NUMBER_MOTOR     3	// Use 3 Motors as usual for a Tri
 	#define PRI_SERVO_FROM   6	// Same Tail Servo as usual
 	#define PRI_SERVO_TO     6

@@ -1186,11 +1186,11 @@ void ACC_getADC () {
 #define WMP_ADDRESS_2 0x52
 
 void Gyro_init() {
-  delay(250);
+  // delay(250);
   i2c_writeReg(WMP_ADDRESS_1, 0xF0, 0x55); // Initialize Extension
-  delay(250);
+  delay(250); //250);
   i2c_writeReg(WMP_ADDRESS_1, 0xFE, 0x05); // Activate Nunchuck pass-through mode
-  delay(250);
+  delay(200); //250);
 }
 
 void Gyro_getADC() {
@@ -1202,6 +1202,10 @@ void Gyro_getADC() {
     for (axis = 0; axis < 3; axis++) {gyroADC[axis]=0;accADC[axis]=0;}
     accADC[YAW] = acc_1G;
     f.NUNCHUKDATA = 0;
+	if(i2c_errors_count > 2000){
+		i2c_errors_count = 0;
+		initSensors();
+	}
   } 
 
   // Wii Motion Plus Data
@@ -1461,11 +1465,12 @@ inline void Sonar_update() {}
 
 
 void initSensors() {
+  POWERPIN_OFF
   delay(200);
   POWERPIN_ON;
-  delay(100);
+  delay(50);
   i2c_init();
-  delay(100);
+  delay(250);
   if (GYRO) Gyro_init();
   if (BARO) Baro_init();
   if (MAG) Mag_init();

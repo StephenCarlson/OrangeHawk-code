@@ -209,7 +209,7 @@ static int16_t motor[NUMBER_MOTOR];
 #if defined(SERVO)
   static int16_t servo[8] = {1500,1500,1500,1500,1500,1500,1500,1500};
 #endif
-#if defined(TRICOPTER_HYBRID_TYPE_A)
+#if defined(TRICOPTER_HYBRID_TYPE_A) || defined(TRICOPTER_HYBRID_TYPE_B)
 	static int16_t hybridTiltFactor = 0; // [0:100] for [Forward Flight:Hover], Hover at HYBRID_TF_MAX
 #endif
 #if defined(TRI_HYBRID_FOLD_MECH)
@@ -241,6 +241,9 @@ static struct {
   #endif
   #if defined(TRI) || defined(TRICOPTER_HYBRID_TYPE_A)
     int16_t tri_yaw_middle;
+  #endif
+  #if defined(TRICOPTER_HYBRID_TYPE_B)
+	int16_t hybrid_cassette_offset;
   #endif
   #if defined HELICOPTER || defined(AIRPLANE)|| defined(SINGLECOPTER)|| defined(DUALCOPTER)
     int16_t servoTrim[8];
@@ -663,6 +666,15 @@ void loop () {
 			#endif
 			writeServos();
 		  #endif
+		  #if defined(TRICOPTER_HYBRID_TYPE_B)
+			servo[2] = MIDRC;
+		    servo[5] = MIDRC;
+		    #if defined(TRI_HYBRID_WING_SERVOS)
+			  servo[0]  = conf.wing_left_mid;
+              servo[1]  = conf.wing_right_mid;
+			#endif
+			writeServos();
+		  #endif
           #ifdef AIRPLANE
             for(i = 4; i<7 ;i++) servo[i] = 1500;
             writeServos();
@@ -795,7 +807,7 @@ void loop () {
     for(i=0;i<CHECKBOXITEMS;i++)
       rcOptions[i] = (auxState & conf.activate[i])>0;
 
-	#if defined(TRICOPTER_HYBRID_TYPE_A)
+	#if defined(TRICOPTER_HYBRID_TYPE_A) || defined(TRICOPTER_HYBRID_TYPE_B)
 		if(rcOptions[BOXHYBD_FF] == 1 && rcOptions[BOXHYBD_INT] == 0){ // Forward Flight
 			hybridTiltFactor = (hybridTiltFactor>HYBRID_TILT_INCVAL)? hybridTiltFactor-HYBRID_TILT_INCVAL: 0;
 			#if defined(TRI_HYBRID_FOLD_MECH)
@@ -821,12 +833,18 @@ void loop () {
 		#if defined(TRI_HYBRID_FOLD_MECH)
 			foldMechSetpoint = (f.ARMED==1)? foldMechSetpoint : HYBRID_FOLD_STOW;
 		#endif
-				
-		servo[2] = 1000 + ((HYBRID_TILT_HOVER-1000)*(hybridTiltFactor>>2))/(HYBRID_TF_MAX>>2) + ((HYBRID_TILT_FWDFLT-1000)*((HYBRID_TF_MAX-hybridTiltFactor)>>2))/(HYBRID_TF_MAX>>2);
-		//debug[0] = motor[0];
-		// debug[1] is the atomicServo[2] value
-		debug[2] = hybridTiltFactor;
-		debug[3] = (hybridTiltFactor>=HYBRID_TF_MAX)? 1:0;
+		#if defined(TRICOPTER_HYBRID_TYPE_A)			
+			servo[2] = 1000 + ((HYBRID_TILT_HOVER-1000)*(hybridTiltFactor>>2))/(HYBRID_TF_MAX>>2) + ((HYBRID_TILT_FWDFLT-1000)*((HYBRID_TF_MAX-hybridTiltFactor)>>2))/(HYBRID_TF_MAX>>2);
+			//debug[0] = motor[0];
+			// debug[1] is the atomicServo[2] value
+			debug[2] = hybridTiltFactor;
+			debug[3] = (hybridTiltFactor>=HYBRID_TF_MAX)? 1:0;
+		#elif defined(TRICOPTER_HYBRID_TYPE_B)
+			//debug[0] = motor[0];
+			// debug[1] is the atomicServo[2] value
+			debug[2] = hybridTiltFactor;
+			debug[3] = (hybridTiltFactor>=HYBRID_TF_MAX)? 1:0;
+		#endif
 	#endif
 	
     // note: if FAILSAFE is disable, failsafeCnt > 5*FAILSAVE_DELAY is always false

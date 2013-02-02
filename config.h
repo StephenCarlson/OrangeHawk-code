@@ -54,8 +54,8 @@
 	// Feedback for the draw pulley mechanism is formed by momentary push switches and resistors, such that a mid-level voltage
 	// with respect to VREF on the ADC means that the motor arms are in transit. Low or High means folded or extended, 
 	// respectively. Dang, is looks like MultiWii doesn't impliment the ADC. KK wins here. No actually, uses regular analogRead().
-	#define TRICOPTER_HYBRID_TYPE_A 
-	//#define TRICOPTER_HYBRID_TYPE_B 
+	//#define TRICOPTER_HYBRID_TYPE_A 
+	#define TRICOPTER_HYBRID_TYPE_B 
 	// Type A is the Axial Tail: A regular Tricopter with the yaw motor also rotating back for forward flight.
 	// Type B is the Bicopter Configuration: Front two rotate down, rear motor fixed pointing up. Google "IAI Panther".
 	// Type C is Combine, as in all three motors rotate forward.
@@ -66,6 +66,8 @@
 	//					0	Separate Motor for F/F	B	-	-	-
 	// Uncomment this wing servo enable flag if you want the controller to do the wing servos
 	#define TRI_HYBRID_WING_SERVOS
+	#define HYBRID_CASSETTE_OFFSET 100
+	
 	// Otherwise, the servos can intercept the wires from the R/C receiver. 
 	// In which case, we may want to mix for the flying wing on the radio, and de-mix inside MultiWii
 	// De-mixing the R/C Rx inputs should work the same, regardless of if we use regular or the PPM Sum method in MultiWii
@@ -85,7 +87,9 @@
 	#define HYBRID_FOLD_HOVER	480		// Remember analogRead(HYBRID_FOLD_ANALOG_CH)<(foldMechSetpoint-10),
 	#define HYBRID_FOLD_STOW	80		// don't get too close to 0 or 1024
 	#define HYBRID_TF_MAX		120 // >>2 becomes 30, which, for (2000-1000)*30, is less than 32767 (16-bit signed max possible)
-
+	#define HYBRID_TILT_LIMIT_A HYBRID_TILT_HOVER
+	#define HYBRID_TILT_LIMIT_B HYBRID_TILT_FWDFLT
+	
   /****************************    Motor minthrottle    *******************************/
     /* Set the minimum throttle command sent to the ESC (Electronic Speed Controller)
        This is the minimum value that allow motors to run at a idle speed  */
@@ -104,8 +108,8 @@
       #define MINCOMMAND  1000
 
   /**********************************    I2C speed   ************************************/
-    #define I2C_SPEED 100000L     //100kHz normal mode, this value must be used for a genuine WMP
-    //#define I2C_SPEED 400000L   //400kHz fast mode, it works only with some WMP clones
+   #define I2C_SPEED 100000L     //100kHz normal mode, this value must be used for a genuine WMP
+   //#define I2C_SPEED 400000L   //400kHz fast mode, it works only with some WMP clones
 
   /***************************    Internal i2c Pullups   ********************************/
     /* enable internal I2C pull ups (in most cases it is better to use external pullups) */
@@ -174,7 +178,7 @@
       //#define MPU6050       //combo + ACC
 
       /* I2C accelerometer */
-      #define NUNCHUCK  // if you want to use the nunckuk connected to a WMP
+      //#define NUNCHUCK  // if you want to use the nunckuk connected to a WMP
       //#define MMA7455
       //#define ADXL345
       //#define BMA020
