@@ -960,18 +960,23 @@ void mixTable() {
 		//		0     90		0 30    120
 		
 		if(hybridTiltFactor<HYBRID_TF_MAX){ // 120 -> 30
-			//uint16_t localTiltCalc = 
-			for(uint8_t i=0; i<3; i++) motor[i] = (motor[i]>2000)? 2000: motor[i];
-			
-			motor[0] = (hybridTiltFactor>(HYBRID_TF_MAX*3/4))? motor[0]:((motor[0]-MINTHROTTLE)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2))*4/3+MINTHROTTLE;
-			
-			motor[1] = (hybridTiltFactor>(HYBRID_TF_MAX*3/4))? motor[1]:((motor[1])*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2))*4/3;
-			motor[2] = (hybridTiltFactor>(HYBRID_TF_MAX*3/4))? motor[2]:((motor[2])*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2))*4/3;
-			
-			motor[1] += ((-YAW_DIRECTION*axisPID[YAW]*((HYBRID_TF_MAX>>2)-(hybridTiltFactor>>2)))/(HYBRID_TF_MAX>>2))>>2;
-			motor[2] += ((YAW_DIRECTION*axisPID[YAW]*((HYBRID_TF_MAX>>2)-(hybridTiltFactor>>2)))/(HYBRID_TF_MAX>>2))>>2;
-			
-			//servo[2] += ((YAW_DIRECTION*axisPID[YAW]*(hybridTiltFactor>>2))/(HYBRID_TF_MAX>>2)) + The start of trying to isolate servo loop as motors are above.
+			if(hybridTiltFactor == 0){
+				motor[0] = MINTHROTTLE;
+				motor[1] = (YAW_DIRECTION*axisPID[YAW])>>2;
+				motor[2] = (-YAW_DIRECTION*axisPID[YAW])>>2;
+			} else {
+				for(uint8_t i=0; i<3; i++) motor[i] = (motor[i]>2000)? 2000: motor[i];
+				
+				motor[0] = (hybridTiltFactor>(HYBRID_TF_MAX*5/8))? motor[0]:((motor[0]-MINTHROTTLE)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2))*8/5+MINTHROTTLE;
+				
+				motor[1] = (hybridTiltFactor>(HYBRID_TF_MAX*3/4))? motor[1]:((motor[1])*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2))*4/3;
+				motor[2] = (hybridTiltFactor>(HYBRID_TF_MAX*3/4))? motor[2]:((motor[2])*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2))*4/3;
+				
+				motor[1] += ((YAW_DIRECTION*axisPID[YAW]*((HYBRID_TF_MAX>>2)-(hybridTiltFactor>>2)))/(HYBRID_TF_MAX>>2))>>2;
+				motor[2] += ((-YAW_DIRECTION*axisPID[YAW]*((HYBRID_TF_MAX>>2)-(hybridTiltFactor>>2)))/(HYBRID_TF_MAX>>2))>>2;
+				
+				//servo[2] += ((YAW_DIRECTION*axisPID[YAW]*(hybridTiltFactor>>2))/(HYBRID_TF_MAX>>2)) + The start of trying to isolate servo loop as motors are above.
+			}
 		}
 		
 		// motor[0] += rcCommand[THROTTLE];
