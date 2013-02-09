@@ -930,9 +930,9 @@ void mixTable() {
 		debug[0] = motor[0];
 		motor[0] += rcCommand[THROTTLE];
 	#elif defined(TRICOPTER_HYBRID_TYPE_B)
-		motor[0] = PIDMIX( 0,+4/3, 0);		//REAR
-		motor[1] = -axisPID[ROLL] - axisPID[PITCH];		//RIGHT PIDMIX(-1,-2/3, 0); //axisPID[PITCH]*2/3;	
-		motor[2] =  axisPID[ROLL] - axisPID[PITCH];		//LEFT  PIDMIX(+1,-2/3, 0);
+		motor[0] = PIDMIX( 0,+3/2, 0);		//REAR //+4/3
+		motor[1] = -axisPID[ROLL] - axisPID[PITCH]/2;		//RIGHT PIDMIX(-1,-2/3, 0); //axisPID[PITCH]*2/3;	
+		motor[2] =  axisPID[ROLL] - axisPID[PITCH]/2;		//LEFT  PIDMIX(+1,-2/3, 0);
 		
 		// servo[2] = YAW_DIRECTION * axisPID[YAW] + MIDRC + conf.hybrid_cassette_offset; //LEFT 
 		// servo[5] = YAW_DIRECTION * axisPID[YAW] + MIDRC - conf.hybrid_cassette_offset; //RIGHT 
@@ -943,23 +943,43 @@ void mixTable() {
 		
 		servo[2] = ((YAW_DIRECTION*axisPID[YAW]*(hybridTiltFactor>>2))/(HYBRID_TF_MAX>>2)) + ((HYBRID_TILT_LIMIT_B-HYBRID_TILT_LIMIT_A)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2) + HYBRID_TILT_LIMIT_A) - (conf.hybrid_cassette_offset);
 		servo[5] = ((YAW_DIRECTION*axisPID[YAW]*(hybridTiltFactor>>2))/(HYBRID_TF_MAX>>2)) + ((HYBRID_TILT_LIMIT_A-HYBRID_TILT_LIMIT_B)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2) + HYBRID_TILT_LIMIT_B) + (conf.hybrid_cassette_offset);
-
+		
+		// 120 is 90 deg up, 0 is 0 deg (forward). Or, 120>>2 = 30, 30 is 90 deg. 120 *3/4.
+		// Actuator		Left & Right Motors			Rear Motor		Left & Right Servos
+		// Pitch		*= sin(t)					*= sin(t)		
+		// Roll			*= sin(t)									+= rollPID * cos(t) * 10% ( leave off for now )
+		// Yaw			+= yawPID*(120-t)*12% ( need cos(t)? )	    *= t/120  ( may want *= sin(t) )
+		
+		//		sin approx		cos approx		[0:90 deg] -> [0:120 ticks]
+		//	1.0	      __		__
+		//	.8	    /...		...\
+		//	.6	   /....		....\
+		//	.4	  /.....		.....\
+		//	.2	 /......		......\
+		//	0	/.......120		.......\
+		//		0     90		0 30    120
+		
 		if(hybridTiltFactor<HYBRID_TF_MAX){ // 120 -> 30
+			//uint16_t localTiltCalc = 
 			for(uint8_t i=0; i<3; i++) motor[i] = (motor[i]>2000)? 2000: motor[i];
 			
-			motor[0] = (hybridTiltFactor>(HYBRID_TF_MAX*3/4))? motor[0]:((motor[0]-MINTHROTTLE)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2))*(4/3)+MINTHROTTLE;
+			motor[0] = (hybridTiltFactor>(HYBRID_TF_MAX*3/4))? motor[0]:((motor[0]-MINTHROTTLE)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2))*4/3+MINTHROTTLE;
 			
 			motor[1] = (hybridTiltFactor>(HYBRID_TF_MAX*3/4))? motor[1]:((motor[1])*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2))*4/3;
 			motor[2] = (hybridTiltFactor>(HYBRID_TF_MAX*3/4))? motor[2]:((motor[2])*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2))*4/3;
 			
+			motor[1] += ((-YAW_DIRECTION*axisPID[YAW]*((HYBRID_TF_MAX>>2)-(hybridTiltFactor>>2)))/(HYBRID_TF_MAX>>2))>>2;
+			motor[2] += ((YAW_DIRECTION*axisPID[YAW]*((HYBRID_TF_MAX>>2)-(hybridTiltFactor>>2)))/(HYBRID_TF_MAX>>2))>>2;
+			
 			//servo[2] += ((YAW_DIRECTION*axisPID[YAW]*(hybridTiltFactor>>2))/(HYBRID_TF_MAX>>2)) + The start of trying to isolate servo loop as motors are above.
 		}
 		
+		// motor[0] += rcCommand[THROTTLE];
 		motor[1] += rcCommand[THROTTLE];
 		motor[2] += rcCommand[THROTTLE];
 		
-		debug[0] = servo[2]; //conf.hybrid_cassette_offset;
-		debug[1] = servo[5]; //MIDRC;
+		debug[0] = rcCommand[PITCH]; // servo[2]; //conf.hybrid_cassette_offset;
+		debug[1] = axisPID[PITCH];  // servo[5]; //MIDRC;
 		
 		servo[2] = constrain( servo[2], 1005, 2000); // LEFT
 		servo[5] = constrain( servo[5], 1005, 2000); // RIGHT
