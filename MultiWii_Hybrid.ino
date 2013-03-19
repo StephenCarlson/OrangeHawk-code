@@ -8,6 +8,46 @@ July  2012     V2.1
  any later version. see <http://www.gnu.org/licenses/>
 */
 
+/**
+MultiWii_Hybrid modifications by Steve Carlson
+http://diydrones.com/profile/StephenCarlson
+19 March 2013
+View in Notepad++ with Tab=4
+
+This addition to Alex's code is designed for use on two types of VTOLs: 3A2/x and 3B2/x, defined here:
+
+Type Pattern Format: [#][x][#]/[x] , [numeric][alpha][numeric]/[alpha] , [#LiftPoints][ControlType][#DoF]/[PlanformType]
+[3]			Indicates three lift motors, or tricopter configuration. 
+			[4] would indicate a quadrotor lifting configuration, not yet implemented.
+[A] or [B]	Means Type A or Type B Yaw Origin/Control. 'A' conveniently corresponds to Axial, as in traditional tricopter.
+			'B' corresponds to Bicopter, as in the yaw is controlled using a bicopter-style cassette/module
+[2]			Number of degrees of freedom for the tilt mechanism. Somewhat redundant, save for later type definitions.
+/[D]		Delta Wing configuration.
+
+Further development of this type specification convention:
+[#LiftPoints][ControlType][#DoF]/[PlanformType]
+
+[ControlType]
+A	Axial Yaw Control
+B	Bilateral/Bicopter
+R	Reaction Thrust (Tail Rotor, NOTAR, etc)
+Q	Quadrotor (Complementary discs for reaction-torque cancellation)
+S	Surfaces
+
+Well, this needs to be developed further. Basically, an attempt to develop a classification system that 
+describes the aircraft here: http://vstol.org/wheel.htm , and thus allows for code design via standardization.
+
+More info to be added later.
+
+Important Note:
+I've tried to leave the original flight code as untouched as possible, however, I've changed the way the 
+software arms: It does not preform the small angle check, so that the vehicle can start on a sevear 
+slant or slope. Also, I've modified the WiiMotionPlus Sensor code slightly for recovering from a blocking 
+state, which seemed to be an issue until I discovered a bad I2C SDA solder connection.
+
+
+**/
+
 #include <avr/io.h>
 
 #include "config.h"
@@ -212,8 +252,8 @@ static int16_t motor[NUMBER_MOTOR];
 #if defined(TRICOPTER_HYBRID_TYPE_A) || defined(TRICOPTER_HYBRID_TYPE_B)
 	static int16_t hybridTiltFactor = 0; // [0:100] for [Forward Flight:Hover], Hover at HYBRID_TF_MAX
 #endif
-#if defined(TRI_HYBRID_FOLD_MECH)
-	static int16_t foldMechSetpoint = 0; // uint16_t is a type mis-match on compare with analogRead()
+#if defined(TRI_HYBRID_MECH)
+	static int16_t hybridMechSetpoint = 0; // uint16_t is a type mis-match on compare with analogRead()
 #endif
 
 // ************************
@@ -810,28 +850,28 @@ void loop () {
 	#if defined(TRICOPTER_HYBRID_TYPE_A) || defined(TRICOPTER_HYBRID_TYPE_B)
 		if(rcOptions[BOXHYBD_FF] == 1 && rcOptions[BOXHYBD_INT] == 0){ // Forward Flight
 			hybridTiltFactor = (hybridTiltFactor>HYBRID_TILT_INCVAL)? hybridTiltFactor-HYBRID_TILT_INCVAL: 0;
-			#if defined(TRI_HYBRID_FOLD_MECH)
-				foldMechSetpoint = (hybridTiltFactor==0)? HYBRID_FOLD_FWDFLT: HYBRID_FOLD_HOVER;
+			#if defined(TRI_HYBRID_MECH)
+				hybridMechSetpoint = (hybridTiltFactor==0)? HYBRID_MECH_FWDFLT: HYBRID_MECH_HOVER;
 			#endif
 		} else if(rcOptions[BOXHYBD_FF] == 0 && rcOptions[BOXHYBD_INT] == 0){ // Hover Mode
 			hybridTiltFactor = ((hybridTiltFactor+HYBRID_TILT_INCVAL)<HYBRID_TF_MAX)? hybridTiltFactor+HYBRID_TILT_INCVAL : HYBRID_TF_MAX;
-			#if defined(TRI_HYBRID_FOLD_MECH)
-				foldMechSetpoint = HYBRID_FOLD_HOVER;
+			#if defined(TRI_HYBRID_MECH)
+				hybridMechSetpoint = HYBRID_MECH_HOVER;
 			#endif
 		} else if(rcOptions[BOXHYBD_FF] == 0 && rcOptions[BOXHYBD_INT] == 1){ // 50/50 Mix, or middle spot between F/F and Hover
 			hybridTiltFactor = ((hybridTiltFactor+HYBRID_TILT_INCVAL)<(HYBRID_TF_MAX/2))? hybridTiltFactor+HYBRID_TILT_INCVAL : 
 							   ((hybridTiltFactor-HYBRID_TILT_INCVAL)>(HYBRID_TF_MAX/2))? hybridTiltFactor-HYBRID_TILT_INCVAL : (HYBRID_TF_MAX/2);
-			#if defined(TRI_HYBRID_FOLD_MECH)
-				foldMechSetpoint = HYBRID_FOLD_HOVER
+			#if defined(TRI_HYBRID_MECH)
+				hybridMechSetpoint = HYBRID_MECH_HOVER
 			#endif
 		} else{ // R/C Knob Channel Mix, direct assignment, no incrementers. For debugging/manual flying. For the manual-transmission type of crowd.
 			hybridTiltFactor = (rcData[AUX1]> 1960)? 0 : ((rcData[AUX1]-1100)<0)? 120: (120-((rcData[AUX1]-1100)>>3)); // (rcData[AUX1]-1000)>>3; // and 120
-			#if defined(TRI_HYBRID_FOLD_MECH)
-				foldMechSetpoint = (hybridTiltFactor==0)? HYBRID_FOLD_FWDFLT: HYBRID_FOLD_HOVER;
+			#if defined(TRI_HYBRID_MECH)
+				hybridMechSetpoint = (hybridTiltFactor==0)? HYBRID_MECH_FWDFLT: HYBRID_MECH_HOVER;
 			#endif
 		}
-		#if defined(TRI_HYBRID_FOLD_MECH)
-			foldMechSetpoint = (f.ARMED==1)? foldMechSetpoint : HYBRID_FOLD_STOW;
+		#if defined(TRI_HYBRID_MECH)
+			hybridMechSetpoint = (f.ARMED==1)? hybridMechSetpoint : HYBRID_MECH_STOW;
 		#endif
 		#if defined(TRICOPTER_HYBRID_TYPE_A)			
 			servo[2] = 1000 + ((HYBRID_TILT_HOVER-1000)*(hybridTiltFactor>>2))/(HYBRID_TF_MAX>>2) + ((HYBRID_TILT_FWDFLT-1000)*((HYBRID_TF_MAX-hybridTiltFactor)>>2))/(HYBRID_TF_MAX>>2);

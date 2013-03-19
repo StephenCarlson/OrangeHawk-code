@@ -46,24 +46,16 @@
 	/** Tricopter Flying-Wing Hybrid by Steve Carlson **/
 	// A Tricopter Flying-Wing Hybrid is a delta-shaped flying-wing mated with a tricopter: The minimalist VTOL super-machine! 
 	// It uses two wing servos, one yaw servo, and three BLDC motors. Either the rear tricopter tail motor or both front motors
-	// tilt such that thrust is directed back, turning the tricopter into a flying wing. A fourth servo modified for continuous 
-	// rotation is attached to a pulley or similiar mechanism to draw the front motors inward, or otherwise, as to streamline  
-	// the aircraft for forward flight in the air, and present a narrow profile on the ground for ground locomotion.
-	// Since flying wing servo mixing is the exact same thing as tank-tread mixing, a set of robot ESCs or modified continuous 
-	// rotation servos can be driven by sharing from the wing servo output. Hence, this is a dual-mode vehicle.
-	// Feedback for the draw pulley mechanism is formed by momentary push switches and resistors, such that a mid-level voltage
-	// with respect to VREF on the ADC means that the motor arms are in transit. Low or High means folded or extended, 
-	// respectively. Dang, is looks like MultiWii doesn't impliment the ADC. KK wins here. No actually, uses regular analogRead().
+	// tilt such that thrust is directed back, turning the tricopter into a flying wing. Alternatively, two servos can drive the
+	// front motors in the Bicopter / TYPE_B mode, controlling yaw and forward flight together.
 	//#define TRICOPTER_HYBRID_TYPE_A 
 	#define TRICOPTER_HYBRID_TYPE_B 
-	// Type A is the Axial Tail: A regular Tricopter with the yaw motor also rotating back for forward flight.
+	// Type A is the Axial Tail: A regular Tricopter with the yaw motor on a 2-axis gimbal for yaw and forward flight.
 	// Type B is the Bicopter Configuration: Front two rotate down, rear motor fixed pointing up. Google "IAI Panther".
-	// Type C is Combine, as in all three motors rotate forward.
-	// Note: Need to insert subclasses, like A1 or B2, A1 as in 1 motor tilts, yaw is axial. B1 means ...
-	// Yaw Orgin		Motor Tilt Pattern				Servo Req. Matrix (not inc. fold sys.)
+	// Type C is Combine, as in all three motors rotate forward. Not implimented
+	// Yaw Orgin		Motor Tilt Pattern				Servo Req. Matrix 
 	// A	Axial		1	Rear Motor Tilts			0	1	2
 	// B	Bicopter	2	Front Two Tilt			A	Y	Y+1	Y+1	
-	//					0	Separate Motor for F/F	B	-	-	-
 	// Uncomment this wing servo enable flag if you want the controller to do the wing servos
 	#define TRI_HYBRID_WING_SERVOS
 	#define HYBRID_CASSETTE_OFFSET 100
@@ -72,20 +64,20 @@
 	// In which case, we may want to mix for the flying wing on the radio, and de-mix inside MultiWii
 	// De-mixing the R/C Rx inputs should work the same, regardless of if we use regular or the PPM Sum method in MultiWii
 	//#define DEMIX_PITCH_ROLL
-	// If a wing folding mechansim is present (meaning a 360-modified servo and an analog stop switch input), uncomment this:
-	//#define TRI_HYBRID_FOLD_MECH
-	#if defined(TRI_HYBRID_FOLD_MECH) // Really, just to remind user to avoid A3 for anything, used for wing position sensing.
-		#define HYBRID_FOLD_ANALOG_CH	A3
+	// If a general purpose mechansim is present (meaning a 360-modified servo and an analog stop switch input), uncomment this:
+	//#define TRI_HYBRID_MECH
+	#if defined(TRI_HYBRID_MECH) // Really, just to remind user to avoid A3 for anything, used for mech position sensing.
+		#define HYBRID_MECH_ANALOG_CH	A3
 		#undef VBAT
 	#endif
 	
-	#define HYBRID_TILT_HOVER	1005	// Servo PWM values
+	#define HYBRID_TILT_HOVER	1150	// Servo PWM values
 	#define HYBRID_TILT_FWDFLT	2000
 	#define HYBRID_TILT_INCVAL	3
-	#define HYBRID_FOLD_FWDFLT	1000	// ADC values to chase
-	#define HYBRID_FOLD_HAZARD	720		// Disable motors at this position as props start to cross arcs
-	#define HYBRID_FOLD_HOVER	480		// Remember analogRead(HYBRID_FOLD_ANALOG_CH)<(foldMechSetpoint-10),
-	#define HYBRID_FOLD_STOW	80		// don't get too close to 0 or 1024
+	#define HYBRID_MECH_FWDFLT	1000	// ADC values to chase
+	#define HYBRID_MECH_HAZARD	720		// Disable motors at this position
+	#define HYBRID_MECH_HOVER	480		// Remember analogRead(HYBRID_MECH_ANALOG_CH)<(hybridMechSetpoint-10),
+	#define HYBRID_MECH_STOW	80		// 
 	#define HYBRID_TF_MAX		120 // >>2 becomes 30, which, for (2000-1000)*30, is less than 32767 (16-bit signed max possible)
 	#define HYBRID_TILT_LIMIT_A HYBRID_TILT_HOVER
 	#define HYBRID_TILT_LIMIT_B HYBRID_TILT_FWDFLT

@@ -1126,17 +1126,17 @@
 	#define PRI_SERVO_TO     6
 	#undef SERVO_TILT			// Remove existing servo functions
 	#undef CAMTRIG
-	#if defined(TRI_HYBRID_WING_SERVOS) // Wings: 1 and 2, Tilt is 3, Fold is 4
+	#if defined(TRI_HYBRID_WING_SERVOS) // Wings: 1 and 2, Tilt is 3, Mech is 4
 		//#undef SERVO_MIX_TILT 
 		#define SEC_SERVO_FROM 1
-		#if defined(TRI_HYBRID_FOLD_MECH)
+		#if defined(TRI_HYBRID_MECH)
 			#define SEC_SERVO_TO 4
 		#else
 			#define SEC_SERVO_TO 3
 		#endif
 	#else
 		#define SEC_SERVO_FROM 3
-		#if defined(TRI_HYBRID_FOLD_MECH)
+		#if defined(TRI_HYBRID_MECH)
 			#define SEC_SERVO_TO 4
 		#else
 			#define SEC_SERVO_TO 3

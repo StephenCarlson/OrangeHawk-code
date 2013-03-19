@@ -901,9 +901,9 @@ void mixTable() {
 		servo[0]  = constrain(servo[0] + conf.wing_left_mid,  WING_LEFT_MIN,  WING_LEFT_MAX );
 		servo[1]  = constrain(servo[1] + conf.wing_right_mid, WING_RIGHT_MIN, WING_RIGHT_MAX);
 	#endif
-	#if defined(TRI_HYBRID_FOLD_MECH)
-		servo[3] =	(analogRead(HYBRID_FOLD_ANALOG_CH)<(foldMechSetpoint-10))? 2000: 
-					(analogRead(HYBRID_FOLD_ANALOG_CH)>(foldMechSetpoint+10))? 1000: 1500;
+	#if defined(TRI_HYBRID_MECH)
+		servo[3] =	(analogRead(HYBRID_MECH_ANALOG_CH)<(hybridMechSetpoint-10))? 2000: 
+					(analogRead(HYBRID_MECH_ANALOG_CH)>(hybridMechSetpoint+10))? 1000: 1500;
 	#endif
 	
 	#if defined(TRICOPTER_HYBRID_TYPE_A)
@@ -919,8 +919,8 @@ void mixTable() {
 			for(uint8_t i=1; i<3; i++){
 				motor[i] = (motor[i]>2000)? 2000: motor[i];
 				motor[i] = (hybridTiltFactor>(HYBRID_TF_MAX*3/4))? motor[i]:((motor[i]-MINTHROTTLE)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2))*4/3+MINTHROTTLE;
-				#if defined(TRI_HYBRID_FOLD_MECH)
-					if(analogRead(HYBRID_FOLD_ANALOG_CH)>HYBRID_FOLD_HAZARD) motor[i] = MINCOMMAND; // Note: Goes to MINTHROTTLE in motor filtering 200 lines down.
+				#if defined(TRI_HYBRID_MECH)
+					if(analogRead(HYBRID_MECH_ANALOG_CH)>HYBRID_MECH_HAZARD) motor[i] = MINCOMMAND; // Note: Goes to MINTHROTTLE in motor filtering 200 lines down.
 				#endif
 			}	
 			
@@ -1288,7 +1288,7 @@ void mixTable() {
   for (i = 0; i < NUMBER_MOTOR; i++) {
     if (maxMotor > MAXTHROTTLE) // this is a way to still have good gyro corrections if at least one motor reaches its max.
       motor[i] -= maxMotor - MAXTHROTTLE;
-    motor[i] = constrain(motor[i], MINTHROTTLE, MAXTHROTTLE);    // Fold Mech prop strike code upset by this
+    motor[i] = constrain(motor[i], MINTHROTTLE, MAXTHROTTLE);    
     if ((rcData[THROTTLE]) < MINCHECK)
       #ifndef MOTOR_STOP
         motor[i] = MINTHROTTLE;
@@ -1298,7 +1298,6 @@ void mixTable() {
 	// #if defined(TRICOPTER_HYBRID_TYPE_A)
 		// if(hybridTiltFactor==0 && (i==1 || i==2)) motor[i] = MINCOMMAND;
 	// #endif
-	// Also, add here a term to kill front two motors if folded into nose or stowed against wings.
     if (!f.ARMED)
       motor[i] = MINCOMMAND;
 	#if defined(TRICOPTER_HYBRID_TYPE_A)
