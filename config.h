@@ -71,7 +71,7 @@
 		#undef VBAT
 	#endif
 	
-	#define HYBRID_TILT_HOVER	1150	// Servo PWM values
+	#define HYBRID_TILT_HOVER	1080	// Servo PWM values
 	#define HYBRID_TILT_FWDFLT	2000
 	#define HYBRID_TILT_INCVAL	3
 	#define HYBRID_MECH_FWDFLT	1000	// ADC values to chase
@@ -81,7 +81,7 @@
 	#define HYBRID_TF_MAX		120 // >>2 becomes 30, which, for (2000-1000)*30, is less than 32767 (16-bit signed max possible)
 	#define HYBRID_TILT_LIMIT_A HYBRID_TILT_HOVER
 	#define HYBRID_TILT_LIMIT_B HYBRID_TILT_FWDFLT
-	
+
   /****************************    Motor minthrottle    *******************************/
     /* Set the minimum throttle command sent to the ESC (Electronic Speed Controller)
        This is the minimum value that allow motors to run at a idle speed  */
@@ -430,6 +430,14 @@
 
 
 
+
+
+
+
+
+
+
+
 /*************************************************************************************************/
 /*****************                                                                 ***************/
 /****************  SECTION  5 - ALTERNATE SETUP                                            *******/
@@ -519,6 +527,7 @@
     #define FAILSAVE_DELAY     10                     // Guard time for failsafe activation after signal lost. 1 step = 0.1sec - 1sec in example
     #define FAILSAVE_OFF_DELAY 200                    // Time for Landing before motors stop in 0.1sec. 1 step = 0.1sec - 20sec in example
     #define FAILSAVE_THROTTLE  (MINTHROTTLE + 200)    // Throttle level used for landing - may be relative to MINTHROTTLE - as in this case
+
 
 
   /*****************                DFRobot LED RING    *********************************/
@@ -693,6 +702,12 @@
        The four buttons sending 'A', 'B', 'C', 'D' are supported for configuration navigation and request of telemetry pages 1-4 */
 
 
+
+
+
+
+
+
   /**************************************************************************************/
   /***********************                telemetry            **************************/
   /**************************************************************************************/
@@ -812,6 +827,22 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*************************************************************************************************/
 /*****************                                                                 ***************/
 /****************  SECTION  7 - TUNING & DEVELOPER                                  **************/
@@ -875,6 +906,11 @@
        Increasing this value would reduce and delay Magnetometer influence on the output of the filter
        Comment this out if you want to set a specific coeff (non default)*/
     //#define GYR_CMPFM_FACTOR 200.0f
+
+
+
+
+
 
 
   /********************************************************************/

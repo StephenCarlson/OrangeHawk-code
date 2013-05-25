@@ -10,11 +10,11 @@ July  2012     V2.1
 
 /**
 MultiWii_Hybrid modifications by Steve Carlson
+19 March 2013 Version 1.0
 http://diydrones.com/profile/StephenCarlson
-19 March 2013
 View in Notepad++ with Tab=4
 
-This addition to Alex's code is designed for use on two types of VTOLs: 3A2/x and 3B2/x, defined here:
+This modification of Alex's code is designed for use on two types of VTOLs: 3A2/x and 3B2/x, defined here:
 
 Type Pattern Format: [#][x][#]/[x] , [numeric][alpha][numeric]/[alpha] , [#LiftPoints][ControlType][#DoF]/[PlanformType]
 [3]			Indicates three lift motors, or tricopter configuration. 
@@ -45,10 +45,16 @@ software arms: It does not preform the small angle check, so that the vehicle ca
 slant or slope. Also, I've modified the WiiMotionPlus Sensor code slightly for recovering from a blocking 
 state, which seemed to be an issue until I discovered a bad I2C SDA solder connection.
 
+Information on the Orange Hawk VTOL can be found at these threads as of 19 March 2013:
+http://diydrones.com/profiles/blogs/the-orange-hawk-tricopter-flying-wing-vtol-uav
+http://www.rcgroups.com/forums/showthread.php?p=24445982#post24445982
+
+
 
 **/
 
 #include <avr/io.h>
+#include <avr/wdt.h>
 
 #include "config.h"
 #include "def.h"
@@ -551,6 +557,9 @@ void annexCode() { // this code is excetuted at each loop and won't interfere wi
 }
 
 void setup() {
+	wdt_reset();
+	WDTCSR |= _BV(WDCE) | _BV(WDE);
+	WDTCSR = _BV(WDE) | _BV(WDP3); // | _BV(WDP1) | _BV(WDP0);
   #if !defined(GPS_PROMINI)
     SerialOpen(0,SERIAL_COM_SPEED);
   #endif
@@ -566,10 +575,14 @@ void setup() {
   #if defined(OPENLRSv2MULTI)
     initOpenLRS();
   #endif
-  initSensors();
+  initSensors(); //650ms
   #if defined(I2C_GPS) || defined(GPS_SERIAL) || defined(GPS_FROM_OSD)
     GPS_set_pids();
   #endif
+	wdt_reset();
+	WDTCSR |= _BV(WDCE) | _BV(WDE);
+	WDTCSR = _BV(WDE) | _BV(WDP2) | _BV(WDP1);
+  
   previousTime = micros();
   #if defined(GIMBAL)
    calibratingA = 400;
@@ -1032,6 +1045,8 @@ void loop () {
         break;
     }
   }
+  
+  wdt_reset();
  
   computeIMU();
   // Measure loop rate just afer reading the sensors

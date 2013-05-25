@@ -1466,12 +1466,12 @@ inline void Sonar_update() {}
 
 void initSensors() {
   POWERPIN_OFF
-  delay(200);
+  delay(50);
   POWERPIN_ON;
   delay(50);
   i2c_init();
-  delay(250);
-  if (GYRO) Gyro_init();
+  delay(100);
+  if (GYRO) Gyro_init(); //450ms
   if (BARO) Baro_init();
   if (MAG) Mag_init();
   if (ACC) {ACC_init();acc_25deg = acc_1G * 0.423;}
