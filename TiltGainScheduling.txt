@@ -1,0 +1,57 @@
+
+servo[2] = (YAW_DIRECTION*axisPID[YAW]*(hybridTiltFactor>>2))/(HYBRID_TF_MAX>>2) + (((HYBRID_TILT_LIMIT_B-1000)*(hybridTiltFactor>>2))/(HYBRID_TF_MAX>>2)) + (((HYBRID_TILT_LIMIT_A-1000)*((HYBRID_TF_MAX-hybridTiltFactor)>>2))/(HYBRID_TF_MAX>>2)) + (conf.hybrid_cassette_offset) +                       
+           | +1 or -1    * [-500:500] * 30 = 15k, but could be greater         | + |   2000-1000 = 1000. 1000* 30 = 30k. So, must to separately          | + |    1000, but 2k good, -1000, 1000 * 30 = 30k .... three 16-bit operations per servo!
+
+           |                 (+) PID Contribution, Scaled to Hover             | + |                    Hover Position scaled by factor                  | + |         Forward Flight scaled by factor                                             | + |  +/- Trim fwd from Hover  | + Trim
+
+( ((HYBRID_TILT_LIMIT_B-1000)*(hybridTiltFactor>>2)) + (HYBRID_TILT_LIMIT_A-1000)*((HYBRID_TF_MAX-hybridTiltFactor)>>2) )/(HYBRID_TF_MAX>>2)
+                        1000 * 30  = 30k                         (less than 100) * 30 = 3000 , sum is 33k, over 32767! 2767, must be 92 or less. Now have 
+
+(HYBRID_TILT_LIMIT_B-HYBRID_TILT_LIMIT_A)*hybridTiltFactor/30 + HYBRID_TILT_LIMIT_A - 1000
+    less than 1000 * up to 30 / 30 = 30ish, + 1000ish = 1030 - 1000 = 30
+2000-1005 = 995 * 30 / 30 +1005 = 2000 -1000 = 1000
+995 -> 0 +1005 - 1000 = 5
+
+(HYBRID_TILT_LIMIT_B-HYBRID_TILT_LIMIT_A)*hybridTiltFactor/30 + HYBRID_TILT_LIMIT_A 
+|   Fixed Constants                     |* [0:30] / 30 + Fixed Constant
+
+servo[2] = ((YAW_DIRECTION*axisPID[YAW]*(hybridTiltFactor>>2))/(HYBRID_TF_MAX>>2)) + ((HYBRID_TILT_LIMIT_B-HYBRID_TILT_LIMIT_A)*hybridTiltFactor/30 + HYBRID_TILT_LIMIT_A) + (conf.hybrid_cassette_offset);
+           |   (+) PID Contribution, constant sign, Linearly Scaled              | + |    Linear Positioning function   [HYBRID_TILT_LIMIT_A:HYBRID_TILT_LIMIT_B]        | + | (+/-) Trim for 10 deg     |
+
+servo[2] = ((YAW_DIRECTION*axisPID[YAW]*(hybridTiltFactor>>2))/(HYBRID_TF_MAX>>2)) + ((HYBRID_TILT_LIMIT_B-HYBRID_TILT_LIMIT_A)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2) + HYBRID_TILT_LIMIT_A) - (conf.hybrid_cassette_offset);
+servo[5] = ((YAW_DIRECTION*axisPID[YAW]*(hybridTiltFactor>>2))/(HYBRID_TF_MAX>>2)) + ((HYBRID_TILT_LIMIT_A-HYBRID_TILT_LIMIT_B)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2) + HYBRID_TILT_LIMIT_B) + (conf.hybrid_cassette_offset);
+
+
+
+
+
+
+
+
+
+
+
+servo[2] = 
+
+
+
+
+
+MIDRC + conf.hybrid_cassette_offset + ((HYBRID_TILT_HOVER-1000 + YAW_DIRECTION*axisPID[YAW])*(hybridTiltFactor>>2))/(HYBRID_TF_MAX>>2) + 
+					((HYBRID_TILT_FWDFLT-1000)*((HYBRID_TF_MAX-hybridTiltFactor)>>2))/(HYBRID_TF_MAX>>2);
+
+					
+					
+1500 + 300 + ((1005-1000 + -1*axisPID[YAW])*(hybridTiltFactor/4))/(30) + ((2000-1000)*((120-hybridTiltFactor)/4))/(30);
+			
+					
+					
+					
+					
+					
+servo[5] = MIDRC - conf.hybrid_cassette_offset + ((HYBRID_TILT_HOVER-1000 + YAW_DIRECTION*axisPID[YAW])*(hybridTiltFactor>>2))/(HYBRID_TF_MAX>>2) + 
+					((HYBRID_TILT_FWDFLT-1000)*((HYBRID_TF_MAX-hybridTiltFactor)>>2))/(HYBRID_TF_MAX>>2);
+
+					
+					
+servo[2] = YAW_DIRECTION * axisPID[YAW] + ((HYBRID_TILT_HOVER-1000)*(hybridTiltFactor>>2))/(HYBRID_TF_MAX>>2) + ((HYBRID_TILT_FWDFLT-1000)*((HYBRID_TF_MAX-hybridTiltFactor)>>2))/(HYBRID_TF_MAX>>2) + MIDRC + conf.hybrid_cassette_offset; 

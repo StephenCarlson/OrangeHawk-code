@@ -557,9 +557,9 @@ void annexCode() { // this code is excetuted at each loop and won't interfere wi
 }
 
 void setup() {
-	wdt_reset();
-	WDTCSR |= _BV(WDCE) | _BV(WDE);
-	WDTCSR = _BV(WDE) | _BV(WDP3); // | _BV(WDP1) | _BV(WDP0);
+	// wdt_reset();
+	// WDTCSR |= _BV(WDCE) | _BV(WDE);
+	// WDTCSR = _BV(WDE) | _BV(WDP3); // | _BV(WDP1) | _BV(WDP0);
   #if !defined(GPS_PROMINI)
     SerialOpen(0,SERIAL_COM_SPEED);
   #endif
@@ -579,9 +579,9 @@ void setup() {
   #if defined(I2C_GPS) || defined(GPS_SERIAL) || defined(GPS_FROM_OSD)
     GPS_set_pids();
   #endif
-	wdt_reset();
-	WDTCSR |= _BV(WDCE) | _BV(WDE);
-	WDTCSR = _BV(WDE) | _BV(WDP2) | _BV(WDP1);
+	// wdt_reset();
+	// WDTCSR |= _BV(WDCE) | _BV(WDE);
+	// WDTCSR = _BV(WDE) | _BV(WDP2) | _BV(WDP1);
   
   previousTime = micros();
   #if defined(GIMBAL)
@@ -720,11 +720,15 @@ void loop () {
 			writeServos();
 		  #endif
 		  #if defined(TRICOPTER_HYBRID_TYPE_B)
-			servo[2] = MIDRC;
-		    servo[5] = MIDRC;
+			// servo[2] = MIDRC;
+		    // servo[5] = MIDRC;
+			servo[0] = MIDRC;
+		    servo[1] = MIDRC;
 		    #if defined(TRI_HYBRID_WING_SERVOS)
-			  servo[0]  = conf.wing_left_mid;
-              servo[1]  = conf.wing_right_mid;
+			  // servo[0]  = conf.wing_left_mid;
+              // servo[1]  = conf.wing_right_mid;
+			  servo[5]  = conf.wing_left_mid;
+              servo[2]  = conf.wing_right_mid;
 			#endif
 			writeServos();
 		  #endif
@@ -1046,7 +1050,7 @@ void loop () {
     }
   }
   
-  wdt_reset();
+  // wdt_reset();
  
   computeIMU();
   // Measure loop rate just afer reading the sensors

@@ -906,14 +906,15 @@ void mixTable() {
 
 	#if defined(TRI_HYBRID_WING_SERVOS) // Wings: 1 and 2, Tilt is 3, Fold is 4
 		if (f.PASSTHRU_MODE) {
-			servo[0]  = (PITCH_DIRECTION_L * (rcData[PITCH]-MIDRC) + ROLL_DIRECTION_L * (rcData[ROLL]-MIDRC))/2;
-			servo[1]  = (PITCH_DIRECTION_R * (rcData[PITCH]-MIDRC) + ROLL_DIRECTION_R * (rcData[ROLL]-MIDRC))/2;
+			// Notes: Original Getto Board: 0 and 1. New Board: 5, 2
+			servo[5]  = (PITCH_DIRECTION_L * (rcData[PITCH]-MIDRC) + ROLL_DIRECTION_L * (rcData[ROLL]-MIDRC))/2;
+			servo[2]  = (PITCH_DIRECTION_R * (rcData[PITCH]-MIDRC) + ROLL_DIRECTION_R * (rcData[ROLL]-MIDRC))/2;
 		} else{
-			servo[0]  = PITCH_DIRECTION_L * axisPID[PITCH] + ROLL_DIRECTION_L * axisPID[ROLL];
-			servo[1]  = PITCH_DIRECTION_R * axisPID[PITCH] + ROLL_DIRECTION_R * axisPID[ROLL];
+			servo[5]  = PITCH_DIRECTION_L * axisPID[PITCH] + ROLL_DIRECTION_L * axisPID[ROLL];
+			servo[2]  = PITCH_DIRECTION_R * axisPID[PITCH] + ROLL_DIRECTION_R * axisPID[ROLL];
 		}
-		servo[0]  = constrain(servo[0] + conf.wing_left_mid,  WING_LEFT_MIN,  WING_LEFT_MAX );
-		servo[1]  = constrain(servo[1] + conf.wing_right_mid, WING_RIGHT_MIN, WING_RIGHT_MAX);
+		servo[5]  = constrain(servo[5] + conf.wing_left_mid,  WING_LEFT_MIN,  WING_LEFT_MAX );
+		servo[2]  = constrain(servo[2] + conf.wing_right_mid, WING_RIGHT_MIN, WING_RIGHT_MAX);
 	#endif
 	#if defined(TRI_HYBRID_MECH)
 		servo[3] =	(analogRead(HYBRID_MECH_ANALOG_CH)<(hybridMechSetpoint-10))? 2000: 
@@ -949,14 +950,16 @@ void mixTable() {
 		motor[2] =  axisPID[ROLL] - axisPID[PITCH]/2;		//LEFT  PIDMIX(+1,-2/3, 0);
 		
 		int16_t yawPIDterm = ((YAW_DIRECTION*axisPID[YAW]*(hybridTiltFactor>>2))/(HYBRID_TF_MAX>>2));
-		servo[2] = yawPIDterm + ((2000-HYBRID_TILT_LIMIT_A)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2) + 1000) - (conf.hybrid_cassette_offset);
-		servo[5] = yawPIDterm + ((HYBRID_TILT_LIMIT_A-2000)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2) + 2000) + (conf.hybrid_cassette_offset);
+		// servo[2] = yawPIDterm + ((2000-HYBRID_TILT_LIMIT_A)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2) + 1000) - (conf.hybrid_cassette_offset);
+		// servo[5] = yawPIDterm + ((HYBRID_TILT_LIMIT_A-2000)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2) + 2000) + (conf.hybrid_cassette_offset);
+		servo[0] = yawPIDterm + ((2000-HYBRID_TILT_LIMIT_A)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2) + 1000) - (conf.hybrid_cassette_offset);
+		servo[1] = yawPIDterm + ((HYBRID_TILT_LIMIT_A-2000)*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2) + 2000) + (conf.hybrid_cassette_offset);
 		
 		if(hybridTiltFactor<HYBRID_TF_MAX){ // 120 -> 30
 			if(hybridTiltFactor == 0){
 				motor[0] = MINTHROTTLE;
-				motor[1] = (YAW_DIRECTION*axisPID[YAW])>>2;
-				motor[2] = (-YAW_DIRECTION*axisPID[YAW])>>2;
+				motor[1] = 0; //(YAW_DIRECTION*axisPID[YAW])>>2;
+				motor[2] = 0; //(-YAW_DIRECTION*axisPID[YAW])>>2;
 			} else {
 				for(uint8_t i=0; i<3; i++) motor[i] = (motor[i]>2000)? 2000: motor[i];
 				
@@ -965,8 +968,8 @@ void mixTable() {
 				motor[1] = (hybridTiltFactor>(HYBRID_TF_MAX*3/4))? motor[1]:((motor[1])*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2))*4/3;
 				motor[2] = (hybridTiltFactor>(HYBRID_TF_MAX*3/4))? motor[2]:((motor[2])*(hybridTiltFactor>>2)/(HYBRID_TF_MAX>>2))*4/3;
 				
-				motor[1] += ((YAW_DIRECTION*axisPID[YAW]*((HYBRID_TF_MAX>>2)-(hybridTiltFactor>>2)))/(HYBRID_TF_MAX>>2))>>2;
-				motor[2] += ((-YAW_DIRECTION*axisPID[YAW]*((HYBRID_TF_MAX>>2)-(hybridTiltFactor>>2)))/(HYBRID_TF_MAX>>2))>>2;
+				//motor[1] += ((YAW_DIRECTION*axisPID[YAW]*((HYBRID_TF_MAX>>2)-(hybridTiltFactor>>2)))/(HYBRID_TF_MAX>>2))>>2;
+				//motor[2] += ((-YAW_DIRECTION*axisPID[YAW]*((HYBRID_TF_MAX>>2)-(hybridTiltFactor>>2)))/(HYBRID_TF_MAX>>2))>>2;
 				
 				//servo[2] += ((YAW_DIRECTION*axisPID[YAW]*(hybridTiltFactor>>2))/(HYBRID_TF_MAX>>2)) + The start of trying to isolate servo loop as motors are above.
 			}
@@ -979,8 +982,10 @@ void mixTable() {
 		debug[0] = rcCommand[PITCH]; // servo[2]; //conf.hybrid_cassette_offset;
 		debug[1] = axisPID[PITCH];  // servo[5]; //MIDRC;
 		
-		servo[2] = constrain( servo[2], 1020, 2000); // LEFT
-		servo[5] = constrain( servo[5], 1020, 2000); // RIGHT
+		//servo[2] = constrain( servo[2], 1020, 2000); // LEFT
+		//servo[5] = constrain( servo[5], 1020, 2000); // RIGHT
+		servo[0] = constrain( servo[0], 1020, 2000); // LEFT
+		servo[1] = constrain( servo[1], 1020, 2000); // RIGHT
 	#endif
 #endif
 

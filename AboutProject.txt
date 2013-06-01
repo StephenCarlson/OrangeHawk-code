@@ -1,0 +1,38 @@
+Version 1.0 Released 19 March 2013
+
+
+This Codebase is for the Orange Hawk VTOL Hybrid, released March 2013. 
+It compiles in Arduino 1.0 and Processing 1.5.1, using MultiWii 2.1 as the base code.
+The Processing library controlP5-0.7.5 is used in the MultiWiiConf utility.
+
+History:
+In August 2011, the author, Steve, decided to pursue a life-long goal of making a VTOL dream machine.
+The goal was to create an aircraft capable of hovering and VTOL operations, but with the efficiency of 
+a fixed-wing aircraft. Inspiration for this project came from news clips such as the IAI Panther and 
+Mini-Panther, presented on YouTube such as this example here: http://www.youtube.com/watch?v=FJv-kQ2rN2c
+Further, the author has been actively engaged in UAV design and experimentation for 9 years, starting with
+electric R/C aircraft at age 13, and had concurrently attempted other ideas for VTOL aircraft.
+
+Also, the efforts of "leadfeather", "cass3825", "foam and tape", "EddieWeeks" and "RCvertt" on the 
+RcGroups.com VTOL forum were inspirational. Although this group developed code based on MultiWii 1.7/1.8 
+for their efforts, I decided to forge ahead on my own modification of the more recent 2.1 version and try 
+to keep things simple. Their code is available in various threads, and a primary version can be found at 
+http://www.rcgroups.com/forums/showthread.php?t=1523814, or at 
+http://www.rcgroups.com/forums/member.php?u=56274 , cass3825's blog. I've modified the MultiWiiConf 
+utility for this code, and have other modifications such as a general purpose mechanism controler started.
+
+The airframe I've constructed, called the "Orange Hawk" design, is a Tricopter Delta Wing with a Bicopter
+front cassette assembly, which means that the front motors are actuated independently. Details on 
+the airframe itself, including the design decision, theory, motor selections, airfoil, and other metrics
+are to be detailed in a AIAA Student Conference Paper to be presented at the AIAA Region VI Student 
+Conference in March 2013, and will be fully detailed after that date.
+
+
+Information on the Orange Hawk VTOL design can be found at these threads as of 19 March 2013:
+http://diydrones.com/profiles/blogs/the-orange-hawk-tricopter-flying-wing-vtol-uav
+http://www.rcgroups.com/forums/showthread.php?p=24445982#post24445982
+
+
+
+Thanks for you interest, and enjoy flying!
+-Steve
