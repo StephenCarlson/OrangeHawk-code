@@ -547,9 +547,9 @@ void i2c_MS561101BA_readCalibration(){
 }
 
 void  Baro_init() {
-  delay(10);
+  delay(5);
   i2c_MS561101BA_reset();
-  delay(100);
+  delay(50);
   i2c_MS561101BA_readCalibration();
 }
 
@@ -1017,7 +1017,7 @@ void Mag_getADC() {
   #define MAG_DATA_REGISTER 0x03
   
   void Mag_init() { 
-    delay(100);
+    delay(10); // <steve> Already have waited with other sensors before mag. </steve>
     // force positiveBias
     i2c_writeReg(MAG_ADDRESS ,0x00 ,0x71 ); //Configuration Register A  -- 0 11 100 01  num samples: 8 ; output rate: 15Hz ; positive bias
     delay(50);
@@ -1028,7 +1028,7 @@ void Mag_getADC() {
     // read values from the compass -  self test operation
     // by placing the mode register into single-measurement mode (0x01), two data acquisition cycles will be made on each magnetic vector.
     // The first acquisition values will be subtracted from the second acquisition, and the net measurement will be placed into the data output registers
-    delay(100);
+    delay(50);
       getADC();
     delay(10);
     #if defined(HMC5883)
@@ -1465,12 +1465,12 @@ inline void Sonar_update() {}
 
 
 void initSensors() {
-  POWERPIN_OFF
-  delay(50);
+  // POWERPIN_OFF
+  // delay(5);
   POWERPIN_ON;
-  delay(50);
+  delay(5);
   i2c_init();
-  delay(100);
+  //delay(100);
   if (GYRO) Gyro_init(); //450ms
   if (BARO) Baro_init();
   if (MAG) Mag_init();
