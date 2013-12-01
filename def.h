@@ -328,7 +328,7 @@
   #define STABLEPIN_ON               PORTC |= 1<<6;
   #define STABLEPIN_OFF              PORTC &= ~(1<<6);
 
-  #define PPM_PIN_INTERRUPT          attachInterrupt(4, rxInt, RISING);  //PIN 19, also used for Spektrum satellite option
+  #define PPM_PIN_INTERRUPT          attachInterrupt(4, rxInt, RISING); PORTD |= 1<<2;  //PIN 19, also used for Spektrum satellite option
   #define SPEK_SERIAL_VECT           USART1_RX_vect
   #define SPEK_DATA_REG              UDR1
   //RX PIN assignment inside the port //for PORTK
@@ -361,9 +361,9 @@
   #define SERVO_3_PINMODE            pinMode(33,OUTPUT); pinMode(46,OUTPUT); // CAM TRIG  - alt TILT_PITCH
   #define SERVO_3_PIN_HIGH           PORTC |= 1<<4;PORTL |= 1<<3;
   #define SERVO_3_PIN_LOW            PORTC &= ~(1<<4);PORTL &= ~(1<<3);
-  #define SERVO_4_PINMODE            pinMode (37, OUTPUT);                   // new       - alt TILT_ROLL
-  #define SERVO_4_PIN_HIGH           PORTC |= 1<<0;
-  #define SERVO_4_PIN_LOW            PORTC &= ~(1<<0);
+  #define SERVO_4_PINMODE            pinMode (12, OUTPUT);		//pinMode (37, OUTPUT);                   // new       - alt TILT_ROLL
+  #define SERVO_4_PIN_HIGH           PORTB |= 1<<6;				//PORTC |= 1<<0;
+  #define SERVO_4_PIN_LOW            PORTB &= ~(1<<6);			//PORTC &= ~(1<<0);
   #define SERVO_5_PINMODE            pinMode(6,OUTPUT);                      // BI LEFT
   #define SERVO_5_PIN_HIGH           PORTH |= 1<<3;
   #define SERVO_5_PIN_LOW            PORTH &= ~(1<<3);
@@ -1122,24 +1122,49 @@
   #endif
 #elif defined(TRICOPTER_HYBRID_TYPE_A) || defined(TRICOPTER_HYBRID_TYPE_B)
 	#define NUMBER_MOTOR     3	// Use 3 Motors as usual for a Tri
-	#define PRI_SERVO_FROM   6	// Same Tail Servo as usual
-	#define PRI_SERVO_TO     6
+	//#define PRI_SERVO_FROM   6	// Same Tail Servo as usual
+	//#define PRI_SERVO_TO     6
 	#undef SERVO_TILT			// Remove existing servo functions
 	#undef CAMTRIG
-	#if defined(TRI_HYBRID_WING_SERVOS) // Wings: 1 and 2, Tilt is 3, Mech is 4
-		//#undef SERVO_MIX_TILT 
-		#define SEC_SERVO_FROM 1
-		#if defined(TRI_HYBRID_MECH)
-			#define SEC_SERVO_TO 4
+	// #if defined(TRI_HYBRID_WING_SERVOS) // Wings: 1 and 2, Tilt is 3, Mech is 4
+		#undef SERVO_MIX_TILT 
+		// #define SEC_SERVO_FROM 1
+		// #if defined(TRI_HYBRID_MECH)
+			// #define SEC_SERVO_TO 4
+		// #else
+			// #define SEC_SERVO_TO 3
+		// #endif
+	// #else
+		// #define SEC_SERVO_FROM 3
+		// #if defined(TRI_HYBRID_MECH)
+			// #define SEC_SERVO_TO 4
+		// #else
+			// #define SEC_SERVO_TO 3
+		// #endif
+	// #endif
+	
+	#define PRI_SERVO_FROM 1			//	<steve> 23 Oct 2013
+	#if defined(TRI_HYBRID_WING_SERVOS) //	Currently: Wings on [2], [5], Arms on [0], [1], [3] for Mech 
+										//                      3    6            1    2    4
+										// 
+										//					1	2	3	4	-	6
+										//	Wings+Mech		X	X	X	X		X
+										//	Wings Only		X	X	X			X
+										//	Just Arms		X	X
+										//	Mech Only		X	X		X
+										
+		#define SEC_SERVO_FROM			6
+		#define SEC_SERVO_TO			6
+		#if defined(TRI_HYBRID_MECH) || defined(TRI_HYBRID_PAN)
+			#define PRI_SERVO_TO		4
 		#else
-			#define SEC_SERVO_TO 3
+			#define PRI_SERVO_TO		3
 		#endif
 	#else
-		#define SEC_SERVO_FROM 3
-		#if defined(TRI_HYBRID_MECH)
-			#define SEC_SERVO_TO 4
-		#else
-			#define SEC_SERVO_TO 3
+		#define PRI_SERVO_TO			2
+		#if defined(TRI_HYBRID_MECH) || defined(TRI_HYBRID_PAN)
+			#define SEC_SERVO_FROM		4
+			#define SEC_SERVO_TO		4
 		#endif
 	#endif
 #endif

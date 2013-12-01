@@ -643,7 +643,7 @@ void setup() {
   
   	wdt_reset();
 	WDTCSR |= _BV(WDCE) | _BV(WDE);
-	WDTCSR = _BV(WDE) | _BV(WDP2) | _BV(WDP1); // 210 gives 2 sec, 3 gives 4 sec
+	WDTCSR = _BV(WDE) | _BV(WDP2) | _BV(WDP1) | _BV(WDP0); // 210 gives 2 sec, 3 gives 4 sec
 }
 
 // ******** Main Loop *********

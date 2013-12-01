@@ -66,6 +66,7 @@
 	//#define DEMIX_PITCH_ROLL
 	// If a general purpose mechansim is present (meaning a 360-modified servo and an analog stop switch input), uncomment this:
 	//#define TRI_HYBRID_MECH
+	#define TRI_HYBRID_PAN
 	#if defined(TRI_HYBRID_MECH) // Really, just to remind user to avoid A3 for anything, used for mech position sensing.
 		#define HYBRID_MECH_ANALOG_CH	A3
 		#undef VBAT
@@ -338,7 +339,7 @@
       /* The following lines apply only for specific receiver with only one PPM sum signal, on digital PIN 2
          Select the right line depending on your radio brand. Feel free to modify the order in your PPM order is different */
       //#define SERIAL_SUM_PPM         PITCH,YAW,THROTTLE,ROLL,AUX1,AUX2,AUX3,AUX4 //For Graupner/Spektrum
-      //#define SERIAL_SUM_PPM         ROLL,PITCH,THROTTLE,YAW,AUX1,AUX2,AUX3,AUX4 //For Robe/Hitec/Futaba
+      #define SERIAL_SUM_PPM         ROLL,PITCH,THROTTLE,YAW,AUX1,AUX2,AUX3,AUX4 //For Robe/Hitec/Futaba
       //#define SERIAL_SUM_PPM         PITCH,ROLL,THROTTLE,YAW,AUX1,AUX2,AUX3,AUX4 //For some Hitec/Sanwa/Others
 
     /**********************    Spektrum Satellite Reciver    *******************************/

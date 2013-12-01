@@ -979,13 +979,18 @@ void mixTable() {
 		motor[1] += rcCommand[THROTTLE];
 		motor[2] += rcCommand[THROTTLE];
 		
-		debug[0] = rcCommand[PITCH]; // servo[2]; //conf.hybrid_cassette_offset;
-		debug[1] = axisPID[PITCH];  // servo[5]; //MIDRC;
+		//debug[0] = rcCommand[PITCH]; // servo[2]; //conf.hybrid_cassette_offset;
+		//debug[1] = axisPID[PITCH];  // servo[5]; //MIDRC;
 		
 		//servo[2] = constrain( servo[2], 1020, 2000); // LEFT
 		//servo[5] = constrain( servo[5], 1020, 2000); // RIGHT
 		servo[0] = constrain( servo[0], 1020, 2000); // LEFT
 		servo[1] = constrain( servo[1], 1020, 2000); // RIGHT
+		
+		#if defined(TRI_HYBRID_PAN)
+			servo[3] =	((hybridTiltFactor>(HYBRID_TF_MAX*5/8)) && f.ARMED)? MIDRC : rcData[YAW];
+			servo[3] =	constrain( servo[3], 1020, 2000);
+		#endif
 	#endif
 #endif
 

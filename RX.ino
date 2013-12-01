@@ -236,6 +236,8 @@ void configureReceiver() {
       }
     chan++;
   }
+  debug[0] = chan;
+  debug[1] = diff;
 }
 #endif
 
