@@ -328,7 +328,7 @@
   #define STABLEPIN_ON               PORTC |= 1<<6;
   #define STABLEPIN_OFF              PORTC &= ~(1<<6);
 
-  #define PPM_PIN_INTERRUPT          attachInterrupt(4, rxInt, RISING); PORTD |= 1<<2;  //PIN 19, also used for Spektrum satellite option
+  #define PPM_PIN_INTERRUPT          attachInterrupt(4, rxInt, RISING);   //PIN 19, also used for Spektrum satellite option PORTD |= 1<<2;
   #define SPEK_SERIAL_VECT           USART1_RX_vect
   #define SPEK_DATA_REG              UDR1
   //RX PIN assignment inside the port //for PORTK

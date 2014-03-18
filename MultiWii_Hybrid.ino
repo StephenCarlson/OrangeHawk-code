@@ -557,12 +557,12 @@ void annexCode() { // this code is excetuted at each loop and won't interfere wi
 }
 
 void setup() {
-	cli();
-	wdt_reset();
-	MCUSR = 0; //&= ~(1<<WDRF);
-	WDTCSR |= _BV(WDCE) | _BV(WDE);
-	WDTCSR = 0; // _BV(WDE) | _BV(WDP3); // | _BV(WDP1) | _BV(WDP0);
-	sei();
+	// cli();
+	// wdt_reset();
+	// MCUSR = 0; //&= ~(1<<WDRF);
+	// WDTCSR |= _BV(WDCE) | _BV(WDE);
+	// WDTCSR = 0; // _BV(WDE) | _BV(WDP3); // | _BV(WDP1) | _BV(WDP0);
+	// sei();
   #if !defined(GPS_PROMINI)
     SerialOpen(0,SERIAL_COM_SPEED);
   #endif
@@ -641,9 +641,9 @@ void setup() {
   f.SMALL_ANGLES_25=1; // important for gyro only conf
   
   
-  	wdt_reset();
-	WDTCSR |= _BV(WDCE) | _BV(WDE);
-	WDTCSR = _BV(WDE) | _BV(WDP2) | _BV(WDP1) | _BV(WDP0); // 210 gives 2 sec, 3 gives 4 sec
+  	// wdt_reset();
+	// WDTCSR |= _BV(WDCE) | _BV(WDE);
+	// WDTCSR = _BV(WDE) | _BV(WDP2) | _BV(WDP1) | _BV(WDP0); // 210 gives 2 sec, 3 gives 4 sec
 }
 
 // ******** Main Loop *********
